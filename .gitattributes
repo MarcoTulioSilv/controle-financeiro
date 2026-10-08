@@ -1,0 +1,15 @@
+# Normaliza finais de linha: o repositório guarda LF; cada SO converte ao fazer checkout.
+* text=auto eol=lf
+
+# Scripts do Windows precisam de CRLF para rodar no cmd/PowerShell
+*.cmd text eol=crlf
+*.bat text eol=crlf
+
+# Scripts de shell precisam de LF (rodam dentro dos containers Linux)
+*.sh  text eol=lf
+mvnw  text eol=lf
+
+# Binários: nunca converter
+*.jar  binary
+*.png  binary
+*.xlsx binary

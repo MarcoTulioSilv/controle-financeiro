@@ -1,0 +1,35 @@
+# ===== Segredos (nunca versionar) =====
+.env
+*.pem
+*.key
+
+# ===== Sessão do WhatsApp (dá controle total da conta do bot) =====
+gateway/auth/
+gateway/sessao/
+
+# ===== Java / Maven =====
+core/target/
+*.class
+
+# ===== Node / TypeScript =====
+gateway/node_modules/
+gateway/dist/
+
+# ===== Backups do banco =====
+backups/
+*.sql
+*.sql.gz
+
+# ===== IDEs =====
+.idea/
+*.iml
+.vscode/*
+!.vscode/extensions.json
+
+# ===== Sistema operacional =====
+Thumbs.db
+desktop.ini
+.DS_Store
+
+#===== Claude =====
+CLUDE.md
