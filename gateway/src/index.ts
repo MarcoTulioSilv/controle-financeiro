@@ -1,0 +1,1 @@
+console.log("gateway: esqueleto iniciado (conexão com o WhatsApp entra na Sprint 2)");
