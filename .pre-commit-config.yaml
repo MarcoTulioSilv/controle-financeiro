@@ -1,0 +1,18 @@
+repos:
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.30.0
+    hooks:
+      - id: gitleaks-system
+        # O gitleaks interpreta argumentos posicionais como caminho do repositório.
+        # Sem esta linha, o pre-commit passa os nomes dos arquivos, o gitleaks falha
+        # e devolve sucesso sem examinar nada (falha aberta).
+        pass_filenames: false
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: detect-private-key
+      - id: check-added-large-files
+        args: ["--maxkb=500"]
+      - id: check-merge-conflict
+      - id: check-yaml
