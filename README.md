@@ -6,6 +6,8 @@ porta exposta à internet**.
 
 Projeto de estudo construído com o **SWEBOK 4.0** como guia e práticas de **DevSecOps**.
 
+> Os nomes de pessoas, bancos e fontes de renda nos documentos são fictícios.
+
 ## Stack
 
 | Componente | Tecnologia |

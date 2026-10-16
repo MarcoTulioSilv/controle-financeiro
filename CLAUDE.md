@@ -76,6 +76,10 @@ Dinheiro e datas:
 - No banco: `DECIMAL(12,2)`. No gateway, valores trafegam só como texto da mensagem.
 - Datas com `java.time`, fuso `America/Sao_Paulo`. Mês de referência é `YearMonth`.
   Nunca use `java.util.Date` nem `Calendar`.
+
+- Nunca escreva dados pessoais reais (nomes de familiares, bancos, cartões, fontes de renda,
+  cidade) em arquivos versionados. Use os nomes fictícios dos documentos; os dados reais
+  ficam em arquivos não versionados, como o `.env`.
 </important>
 
 ## 4. Nomenclatura
