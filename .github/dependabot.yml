@@ -14,9 +14,9 @@ updates:
     directory: /
     schedule:
       interval: weekly
-ignore:
-# Os tipos acompanham a versão do Node em execução (engines no package.json).
-# A troca de versão maior do Node é uma decisão de projeto: engines, pipeline,
-# imagem Docker e tipos mudam juntos, num PR próprio.
-  - dependency-name: "@types/node"
-    update-types: ["version-update:semver-major"]
+    ignore:
+    # Os tipos acompanham a versão do Node em execução (engines no package.json).
+    # A troca de versão maior do Node é uma decisão de projeto: engines, pipeline,
+    # imagem Docker e tipos mudam juntos, num PR próprio.
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
