@@ -41,7 +41,7 @@ controle-financeiro/
 ├── CLAUDE.md
 ├── docs/            ERS.md, adr/
 ├── core/            Java 25 (LTS) + Spring Boot (Maven) — TODA a regra de negócio
-├── gateway/         TypeScript + Node.js LTS + Baileys — só a conexão com o WhatsApp
+├── gateway/         TypeScript + Node.js 26 (LTS) + Baileys — só a conexão com o WhatsApp
 ├── docker-compose.yml
 └── .env.example     modelo de variáveis (o .env real nunca é versionado)
 ```
@@ -69,6 +69,9 @@ Segurança (DevSecOps):
 - O bot não exclui nem altera registros. Exclusões são lógicas e seguem a validação cruzada:
   quem solicita não pode aprovar; o outro usuário aprova com a própria senha (RF10).
 - Respostas do bot contêm só a confirmação do lançamento — nunca saldos ou totais (RNF12).
+- Nunca escreva dados pessoais reais (nomes de familiares, bancos, cartões, fontes de renda,
+  cidade) em arquivos versionados. Use os nomes fictícios dos documentos; os dados reais
+  ficam em arquivos não versionados, como o `.env`.
 
 Dinheiro e datas:
 - Valores monetários sempre `BigDecimal`, escala 2. **Nunca `double` ou `float`.**
@@ -76,10 +79,6 @@ Dinheiro e datas:
 - No banco: `DECIMAL(12,2)`. No gateway, valores trafegam só como texto da mensagem.
 - Datas com `java.time`, fuso `America/Sao_Paulo`. Mês de referência é `YearMonth`.
   Nunca use `java.util.Date` nem `Calendar`.
-
-- Nunca escreva dados pessoais reais (nomes de familiares, bancos, cartões, fontes de renda,
-  cidade) em arquivos versionados. Use os nomes fictícios dos documentos; os dados reais
-  ficam em arquivos não versionados, como o `.env`.
 </important>
 
 ## 4. Nomenclatura
@@ -139,7 +138,14 @@ docker compose logs -f core
 - ADRs 001 a 006 redigidos e aceitos em `docs/adr/`.
 - Design concluído em `docs/design/`: modelo de dados, máquinas de estado, contrato
   gateway → core, interpretador e módulos (regras M1–M5 verificadas com ArchUnit).
-- Em andamento: Sprint 0 (estrutura do monorepo, hooks e pipeline).
-- Próximo: Sprint 1 (interpretador e cálculo de faturas com TDD).
+- Sprint 0 concluída (tag `sprint-0`): monorepo com `core` (Java 25, Spring Boot 4.1) e
+  `gateway` (TypeScript, Node 26); MySQL 8.4 no Docker Compose; pre-commit com gitleaks
+  (`pass_filenames: false` é obrigatório); pipeline com gitleaks, build e testes dos dois
+  projetos, `npm audit`; actions fixadas por hash; Dependabot; `main` protegida por ruleset.
+- ArchUnit: M1 e M2 ativas com `allowEmptyShould(true)`. Remover o `allowEmptyShould` da M2
+  quando o pacote `interpretador` existir.
+- Pendente no pipeline: Semgrep, SpotBugs + FindSecBugs, JaCoCo e Trivy (entram com o
+  código de negócio e os Dockerfiles).
+- Em andamento: Sprint 1 (cálculo de faturas e interpretador, com TDD).
 
 Ao concluir uma etapa relevante, atualize esta seção.
