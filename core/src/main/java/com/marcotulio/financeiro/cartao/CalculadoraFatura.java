@@ -18,7 +18,12 @@ public final class CalculadoraFatura {
 
     /** A primeira data, a partir de {@code aPartirDe} (inclusive), cujo dia do mês é {@code dia}. */
     private static LocalDate proximaDataComDia(int dia, LocalDate aPartirDe) {
-        LocalDate candidata = aPartirDe.withDayOfMonth(dia);
+        LocalDate candidata = comDia(aPartirDe, dia);
         return candidata.isBefore(aPartirDe) ? candidata.plusMonths(1) : candidata;
+    }
+
+    /** O dia {@code dia} do mês de {@code base}; se ele não existir, o último dia desse mês (RF14). */
+    private static LocalDate comDia(LocalDate base, int dia) {
+        return base.withDayOfMonth(Math.min(dia, base.lengthOfMonth()));
     }
 }
