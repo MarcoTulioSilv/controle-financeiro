@@ -8,6 +8,10 @@ public final class CalculadoraFatura {
 
     public FaturaCalculada calcular(RegraCartao regra, LocalDate dataCompra) {
         LocalDate fechamento = proximaDataComDia(regra.diaFechamento(), dataCompra);
+        if (fechamento.isEqual(dataCompra) && regra.compraNoFechamento() == CompraNoFechamento.PROXIMA) {
+            // A compra caiu no próprio dia do fechamento e o cartão a joga para a fatura seguinte.
+            fechamento = proximaDataComDia(regra.diaFechamento(), fechamento.plusDays(1));
+        }
         LocalDate vencimento = proximaDataComDia(regra.diaVencimento(), fechamento.plusDays(1));
         return new FaturaCalculada(YearMonth.from(vencimento), fechamento, vencimento);
     }
