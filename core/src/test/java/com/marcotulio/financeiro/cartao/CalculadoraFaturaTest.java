@@ -128,4 +128,29 @@ class CalculadoraFaturaTest {
         assertThat(fatura.vencimento()).isEqualTo(LocalDate.of(2027, 2, 28));
         assertThat(fatura.mesReferencia()).isEqualTo(YearMonth.of(2027, 2));
     }
+
+    /**
+     * O dia encurtado em um mês curto não pode "contaminar" os meses seguintes: cada ciclo
+     * recomeça do dia configurado no cartão (31/01 → 28/02 → 31/03, e não 28/03).
+     */
+    @Test
+    void cadaCicloRecomecaDoDiaConfiguradoENaoDoDiaEncurtado() {
+        // Arrange (preparar)
+        RegraCartao fecha31Vence10 = new RegraCartao(31, 10, CompraNoFechamento.PROXIMA);
+
+        // Act (agir) — cada compra cai no dia do fechamento do seu mês, jogando para o ciclo seguinte
+        FaturaCalculada aposFechamentoDeDezembro =
+                calculadora.calcular(fecha31Vence10, LocalDate.of(2026, 12, 31));
+        FaturaCalculada aposFechamentoDeJaneiro =
+                calculadora.calcular(fecha31Vence10, LocalDate.of(2027, 1, 31));
+        FaturaCalculada aposFechamentoDeFevereiro =
+                calculadora.calcular(fecha31Vence10, LocalDate.of(2027, 2, 28));
+
+        // Assert (verificar)
+        assertThat(aposFechamentoDeDezembro.fechamento()).isEqualTo(LocalDate.of(2027, 1, 31));
+        assertThat(aposFechamentoDeJaneiro.fechamento()).isEqualTo(LocalDate.of(2027, 2, 28));
+        assertThat(aposFechamentoDeFevereiro.fechamento()).isEqualTo(LocalDate.of(2027, 3, 31));
+        assertThat(aposFechamentoDeFevereiro.vencimento()).isEqualTo(LocalDate.of(2027, 4, 10));
+        assertThat(aposFechamentoDeFevereiro.mesReferencia()).isEqualTo(YearMonth.of(2027, 4));
+    }
 }
