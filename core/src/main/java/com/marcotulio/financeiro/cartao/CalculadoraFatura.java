@@ -16,14 +16,20 @@ public final class CalculadoraFatura {
         return new FaturaCalculada(YearMonth.from(vencimento), fechamento, vencimento);
     }
 
-    /** A primeira data, a partir de {@code aPartirDe} (inclusive), cujo dia do mês é {@code dia}. */
+    /** A primeira data, a partir de {@code aPartirDe} (inclusive), com o dia do mês {@code dia}. */
     private static LocalDate proximaDataComDia(int dia, LocalDate aPartirDe) {
-        LocalDate candidata = comDia(aPartirDe, dia);
-        return candidata.isBefore(aPartirDe) ? candidata.plusMonths(1) : candidata;
+        YearMonth mes = YearMonth.from(aPartirDe);
+        LocalDate candidata = diaDoMes(mes, dia);
+        if (candidata.isBefore(aPartirDe)) {
+            // O mês seguinte é recalculado do dia configurado, e não da data já ajustada: somar
+            // um mês a 28/02 (encurtado de 31) devolveria 28/03, perdendo o dia do cartão.
+            candidata = diaDoMes(mes.plusMonths(1), dia);
+        }
+        return candidata;
     }
 
-    /** O dia {@code dia} do mês de {@code base}; se ele não existir, o último dia desse mês (RF14). */
-    private static LocalDate comDia(LocalDate base, int dia) {
-        return base.withDayOfMonth(Math.min(dia, base.lengthOfMonth()));
+    /** O dia {@code dia} de {@code mes}; se ele não existir nesse mês, o último dia dele (RF14). */
+    private static LocalDate diaDoMes(YearMonth mes, int dia) {
+        return mes.atDay(Math.min(dia, mes.lengthOfMonth()));
     }
 }
