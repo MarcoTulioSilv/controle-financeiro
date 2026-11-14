@@ -21,6 +21,7 @@ backups/
 *.sql.gz
 # ...mas migrações e scripts do projeto são código e devem ser versionados
 !core/src/main/resources/db/migration/*.sql
+!core/src/test/resources/db/migracao-teste/*.sql
 !scripts/mysql/*.sql
 
 # ===== Dados pessoais reais (nunca versionar) =====
