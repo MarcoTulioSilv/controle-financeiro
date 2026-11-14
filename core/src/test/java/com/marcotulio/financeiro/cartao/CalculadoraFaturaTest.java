@@ -113,4 +113,19 @@ class CalculadoraFaturaTest {
         assertThat(fatura.vencimento()).isEqualTo(LocalDate.of(2027, 3, 5));
         assertThat(fatura.mesReferencia()).isEqualTo(YearMonth.of(2027, 3));
     }
+
+    @Test
+    void diaDeVencimentoInexistenteNoMesUsaOUltimoDiaDoMes() {
+        // Arrange (preparar)
+        RegraCartao fecha5Vence31 = new RegraCartao(5, 31, CompraNoFechamento.PROXIMA);
+        LocalDate dataCompra = LocalDate.of(2027, 2, 2);
+
+        // Act (agir)
+        FaturaCalculada fatura = calculadora.calcular(fecha5Vence31, dataCompra);
+
+        // Assert (verificar)
+        assertThat(fatura.fechamento()).isEqualTo(LocalDate.of(2027, 2, 5));
+        assertThat(fatura.vencimento()).isEqualTo(LocalDate.of(2027, 2, 28));
+        assertThat(fatura.mesReferencia()).isEqualTo(YearMonth.of(2027, 2));
+    }
 }
