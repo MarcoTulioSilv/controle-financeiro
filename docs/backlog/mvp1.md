@@ -54,20 +54,20 @@ com Hibernate Envers (RNF06, além das colunas da convenção C7).
 - Referências: ADR-004, ADR-005; `docs/design/modelo-dados.md` (convenções C1–C8).
 
 ## T02 — CalculadoraFatura completa
-- Status: [ ] a fazer
+- Status: [x] concluída
 - Tipo: feat · Branch: `feat/T02-calculadora-fatura`
 - Depende de: a branch `feat/calculadora-fatura` (casos 1 e 4) mergeada na `main`.
 - Objetivo: completar a RN03 com TDD.
 - Critérios de aceitação (cartão que fecha no dia 25 e vence no dia 5, salvo indicação):
-  - [ ] Caso 2: compra em 25/09/2026, regra ATUAL → referência out/2026.
-  - [ ] Caso 3: compra em 25/09/2026, regra PROXIMA → referência nov/2026.
-  - [ ] Caso 5: compra em 26/12/2026 → referência fev/2027 (virada de ano).
-  - [ ] Caso 6: cartão que fecha no dia 30 e vence no dia 5; compra em 28/02/2027, regra ATUAL → fechamento 28/02/2027, referência mar/2027 (dia inexistente usa o último dia do mês, RF14).
-  - [ ] Caso 7: cartão que fecha no dia 3 e vence no dia 10; compra em 21/09/2026 → fechamento 03/10/2026, vencimento 10/10/2026, referência out/2026.
-  - [ ] Dia de vencimento inexistente no mês também usa o último dia do mês, com teste.
-  - [ ] `RegraCartao` rejeita dias fora de 1–31 e regra nula, com testes.
-  - [ ] Atenção: não encadear `plusMonths` a partir de uma data já ajustada ao fim do mês (31/01 → 28/02 → 28/03 perde o dia 31). Recalcule a partir do dia configurado a cada mês, com teste que prove isso.
-  - [ ] A classe continua pura (sem Spring, sem JPA).
+  - [x] Caso 2: compra em 25/09/2026, regra ATUAL → referência out/2026.
+  - [x] Caso 3: compra em 25/09/2026, regra PROXIMA → referência nov/2026.
+  - [x] Caso 5: compra em 26/12/2026 → referência fev/2027 (virada de ano).
+  - [x] Caso 6: cartão que fecha no dia 30 e vence no dia 5; compra em 28/02/2027, regra ATUAL → fechamento 28/02/2027, referência mar/2027 (dia inexistente usa o último dia do mês, RF14).
+  - [x] Caso 7: cartão que fecha no dia 3 e vence no dia 10; compra em 21/09/2026 → fechamento 03/10/2026, vencimento 10/10/2026, referência out/2026.
+  - [x] Dia de vencimento inexistente no mês também usa o último dia do mês, com teste.
+  - [x] `RegraCartao` rejeita dias fora de 1–31 e regra nula, com testes.
+  - [x] Atenção: não encadear `plusMonths` a partir de uma data já ajustada ao fim do mês (31/01 → 28/02 → 28/03 perde o dia 31). Recalcule a partir do dia configurado a cada mês, com teste que prove isso.
+  - [x] A classe continua pura (sem Spring, sem JPA).
 - Referências: ERS RF14, RN03; `docs/design/interpretador.md`, seção 6.
 
 ## T03 — CalendarioBancario (parte pura)
