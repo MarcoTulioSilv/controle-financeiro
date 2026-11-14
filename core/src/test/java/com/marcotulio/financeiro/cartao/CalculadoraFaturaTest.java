@@ -69,4 +69,18 @@ class CalculadoraFaturaTest {
         assertThat(fatura.vencimento()).isEqualTo(LocalDate.of(2026, 11, 5));
         assertThat(fatura.mesReferencia()).isEqualTo(YearMonth.of(2026, 11));
     }
+
+    @Test
+    void compraDepoisDoFechamentoDeDezembroCaiNaFaturaDoAnoSeguinte() {
+        // Arrange (preparar)
+        LocalDate dataCompra = LocalDate.of(2026, 12, 26);
+
+        // Act (agir)
+        FaturaCalculada fatura = calculadora.calcular(fecha25Vence5, dataCompra);
+
+        // Assert (verificar)
+        assertThat(fatura.fechamento()).isEqualTo(LocalDate.of(2027, 1, 25));
+        assertThat(fatura.vencimento()).isEqualTo(LocalDate.of(2027, 2, 5));
+        assertThat(fatura.mesReferencia()).isEqualTo(YearMonth.of(2027, 2));
+    }
 }
