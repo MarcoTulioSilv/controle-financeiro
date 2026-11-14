@@ -3,8 +3,8 @@
 
 | Campo | Valor |
 |---|---|
-| Versão | 1.2 |
-| Data | 01/10/2026 |
+| Versão | 1.3 |
+| Data | 13/11/2026 |
 | Autor | Marco Túlio Silva Oliveira |
 | Referências de processo | SWEBOK 4.0 (KA Software Requirements); estrutura inspirada na ISO/IEC/IEEE 29148 |
 | Status | Validado — linha de base dos requisitos. Alterações seguem o controle de mudanças (seção 12) |
@@ -197,7 +197,8 @@ Prioridade (MoSCoW): **M** = Must (essencial), **S** = Should (importante), **C*
 - Planejado × real por categoria.
 - Filtro por "para quem".
 - Evolução do patrimônio líquido.
-**Origem:** Planilha; refinamento.
+- Os relatórios são construídos no **Power BI Desktop**, no próprio notebook, sobre visões SQL mantidas pelo sistema e lidas por um usuário de banco somente leitura; nunca são publicados no serviço online (ADR-007).
+**Origem:** Planilha; refinamento; controle de mudanças v1.3.
 
 ### RF10 — Exclusão com validação cruzada (M)
 **Descrição:** Todos editam tudo; uma exclusão solicitada por um usuário só se efetiva após a aprovação de outro usuário do domicílio.
@@ -558,3 +559,4 @@ Observações:
 | 1.0 | 01/10/2026 | Validação concluída: titular e apelidos dos cartões confirmados (Banco B → `bmt`, titular Marco); vencimento nominal aprovado para o mês de referência; nova seção 12 (controle de mudanças). Linha de base dos requisitos |
 | 1.1 | 04/10/2026 | Controle de mudanças (issue "tratamento de aportes em ativos e destino do resultado mensal"): novos RF17 (compra e venda de ativos) e RF18 (reserva calculada, podendo ser negativa); ajustes em RF04 (fórmula da economia), RF05 (patrimônio inclui a reserva), RF09 (saldo inicial = reserva), modelo conceitual e Apêndice A (categoria Investimentos) |
 | 1.2 | 05/10/2026 | Controle de mudanças (máquinas de estado): `desfazer` descarta o rascunho aberto (4.1, 4.4); solicitante pode cancelar solicitação pendente (RF10) |
+| 1.3 | 13/11/2026 | Controle de mudanças (prioridade para substituir a planilha): relatórios do RF09 no Power BI Desktop sobre visões SQL, com usuário somente leitura (ADR-007); hospedagem em nuvem avaliada e descartada |

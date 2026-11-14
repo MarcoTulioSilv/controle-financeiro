@@ -17,3 +17,4 @@ Regras:
 | [004](ADR-004-stack.md) | Stack: Java + Spring Boot, gateway TypeScript, MySQL 8 | Aceito |
 | [005](ADR-005-valores-monetarios.md) | Valores monetários com BigDecimal e DECIMAL(12,2) | Aceito |
 | [006](ADR-006-exclusao-logica.md) | Exclusão lógica com validação cruzada | Aceito |
+| [007](ADR-007-relatorios-power-bi.md) | Relatórios no Power BI Desktop sobre visões SQL | Aceito |

@@ -19,6 +19,18 @@ gateway/dist/
 backups/
 *.sql
 *.sql.gz
+# ...mas migrações e scripts do projeto são código e devem ser versionados
+!core/src/main/resources/db/migration/*.sql
+!scripts/mysql/*.sql
+
+# ===== Dados pessoais reais (nunca versionar) =====
+config/dados-iniciais.yml
+*.xlsx
+*.pbix
+
+# ===== Claude Code =====
+.claude/worktrees/
+.claude/settings.local.json
 
 # ===== IDEs =====
 .idea/
@@ -30,6 +42,3 @@ backups/
 Thumbs.db
 desktop.ini
 .DS_Store
-
-#===== Claude =====
-CLUDE.md

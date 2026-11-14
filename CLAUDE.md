@@ -10,27 +10,28 @@ Documentos de referência (leia quando a tarefa envolver requisitos ou decisões
 - `docs/design/` — modelo de dados, máquinas de estado, contrato gateway → core, interpretador
   e módulos (consulte antes de implementar qualquer funcionalidade)
 
-## 1. Modo professor (a regra mais importante)
+## 1. Como trabalhamos: agentes implementam, o Marco revisa
 
-Este é um projeto de **aprendizado, sem prazo**. O objetivo não é só o sistema funcionar:
-é o Marco entender cada parte dele. Priorize o entendimento sobre a velocidade.
+O Marco precisa do sistema funcionando logo, sem abrir mão de entender o que foi feito.
+Por isso o código é escrito por agentes e **todo** ele passa pela revisão do Marco num PR.
 
-- **Antes de escrever código:** explique o objetivo da etapa, a área do SWEBOK 4.0 a que ela
-  pertence e cada conceito novo (ex.: injeção de dependência, JPA, virtual threads), com uma
-  analogia simples quando ajudar.
-- **Incrementos pequenos:** no máximo um arquivo ou uma responsabilidade por vez. Nunca gere
-  um módulo inteiro de uma vez.
-- **Depois de escrever:** explique o código bloco a bloco — o que faz e *por que* foi feito
-  assim. Cite as alternativas que foram descartadas e o motivo.
-- **Comandos:** antes de executar qualquer comando, diga o que ele faz e o que se espera como
-  saída. O ambiente é Windows (PowerShell): use `.\mvnw.cmd`, não `./mvnw`.
-- **Erros:** explique a causa raiz antes de corrigir. Um erro é uma oportunidade de aula.
-- **Fim de cada etapa:** resumo "o que aprendemos" em poucas linhas e, quando fizer sentido,
-  um mini-exercício opcional. Espere a confirmação do Marco antes de seguir.
-- **Quando o Marco quiser escrever sozinho:** dê dicas e perguntas-guia, não a resposta pronta.
-  Revise o código dele com honestidade, apontando problemas com clareza.
-- **Idioma:** português do Brasil. Termos técnicos em inglês são mantidos, com tradução ou
-  explicação na primeira vez que aparecerem.
+- **Plano de construção:** `docs/backlog/mvp1.md`. Uma tarefa = uma branch = um PR. Não
+  trabalhe fora de uma tarefa do backlog sem o Marco pedir.
+- **Fluxo:** o comando `/orquestrar` escolhe até duas tarefas prontas e lança o subagente
+  `implementador` (em worktree isolada) para cada uma; o subagente `revisor` confere a
+  branch; o orquestrador faz o push com aprovação do Marco; o Marco abre, revisa e mergeia
+  o PR.
+- **Código para ser lido:** simples, com nomes do domínio, sem abstrações "para o futuro".
+  Comentários só onde o *porquê* não é óbvio.
+- **Toda entrega ensina:** o relatório do PR tem a seção "Para aprender", com os conceitos
+  novos e a área do SWEBOK 4.0 envolvida.
+- **Conversa direta com o Marco** (fora do fluxo de agentes): continue no modo professor —
+  explique o conceito antes do código, diga o que um comando faz antes de executá-lo,
+  explique a causa raiz de um erro antes de corrigi-lo e, quando ele quiser escrever
+  sozinho, dê dicas em vez da resposta pronta.
+- **Ambiente:** Windows com VS Code. No PowerShell use `.\mvnw.cmd`; no Bash, `./mvnw`.
+- **Idioma:** português do Brasil, inclusive nas mensagens de commit. Termos técnicos em
+  inglês são mantidos, com explicação na primeira vez que aparecerem.
 
 ## 2. Arquitetura (ADR-004)
 
@@ -39,7 +40,8 @@ Monorepo com dois aplicativos e um banco, orquestrados por Docker Compose:
 ```
 controle-financeiro/
 ├── CLAUDE.md
-├── docs/            ERS.md, adr/
+├── .claude/         subagentes (implementador, revisor) e o comando /orquestrar
+├── docs/            ERS.md, adr/, design/, backlog/
 ├── core/            Java 25 (LTS) + Spring Boot (Maven) — TODA a regra de negócio
 ├── gateway/         TypeScript + Node.js 26 (LTS) + Baileys — só a conexão com o WhatsApp
 ├── docker-compose.yml
@@ -54,6 +56,8 @@ controle-financeiro/
   permissão mínima (só pode criar lançamentos). O core interpreta, valida, grava e devolve o
   texto de resposta.
 - **mysql:** MySQL 8, porta publicada apenas em `127.0.0.1:3307` (acesso pelo MySQL Workbench).
+- **Relatórios (ADR-007):** Power BI Desktop no notebook, lendo **visões SQL** criadas por
+  migrações, com um usuário MySQL somente leitura. Nunca publicar no serviço online.
 
 ## 3. Regras invioláveis
 
@@ -100,7 +104,13 @@ iterativa. Mudanças de requisito atualizam `docs/ERS.md`; decisões novas viram
   obrigatórios.
 - **Commits:** Conventional Commits com descrição em português
   (`feat: calcula mês de referência da fatura`). Um commit por passo lógico.
-- **Branches:** `feat/`, `fix/`, `docs/`, `chore/`. Nada é enviado direto para a `main`.
+- **Branches:** `feat/`, `fix/`, `docs/`, `chore/`, com o código da tarefa
+  (`feat/T02-calculadora-fatura`). Nada é enviado direto para a `main`.
+- **Migrações Flyway:** versão com data e hora, `V<AAAAMMDDHHMM>__descricao.sql`, para dois
+  agentes em paralelo não colidirem. Uma migração que já está na `main` nunca é alterada:
+  corrige-se com uma nova.
+- **Dados de exemplo e de teste:** só os nomes fictícios do ERS. Os dados reais ficam em
+  `config/dados-iniciais.yml` (não versionado; há um `.example.yml` versionado).
 
 ## 6. Testes e qualidade
 
@@ -132,20 +142,16 @@ docker compose logs -f core
 
 ## 8. Estado atual
 
-- ERS v1.2 (linha de base; v1.1 incluiu RF17 compra/venda de ativos e RF18 reserva calculada;
-  v1.2 estendeu o `desfazer` e o cancelamento de solicitações).
+- ERS v1.3 (linha de base; v1.3 levou os relatórios do RF09 para o Power BI Desktop).
   Mudanças seguem a seção 12 do ERS.
-- ADRs 001 a 006 redigidos e aceitos em `docs/adr/`.
-- Design concluído em `docs/design/`: modelo de dados, máquinas de estado, contrato
-  gateway → core, interpretador e módulos (regras M1–M5 verificadas com ArchUnit).
-- Sprint 0 concluída (tag `sprint-0`): monorepo com `core` (Java 25, Spring Boot 4.1) e
-  `gateway` (TypeScript, Node 26); MySQL 8.4 no Docker Compose; pre-commit com gitleaks
-  (`pass_filenames: false` é obrigatório); pipeline com gitleaks, build e testes dos dois
-  projetos, `npm audit`; actions fixadas por hash; Dependabot; `main` protegida por ruleset.
+- ADRs 001 a 007 aceitos em `docs/adr/`.
+- Design concluído em `docs/design/` (modelo de dados, máquinas de estado, contrato
+  gateway → core, interpretador, módulos M1–M5 verificados com ArchUnit).
+- Sprint 0 concluída (tag `sprint-0`): monorepo, MySQL 8.4 no Docker Compose, pre-commit com
+  gitleaks (`pass_filenames: false` é obrigatório), pipeline, Dependabot, `main` protegida.
 - ArchUnit: M1 e M2 ativas com `allowEmptyShould(true)`. Remover o `allowEmptyShould` da M2
   quando o pacote `interpretador` existir.
-- Pendente no pipeline: Semgrep, SpotBugs + FindSecBugs, JaCoCo e Trivy (entram com o
-  código de negócio e os Dockerfiles).
-- Em andamento: Sprint 1 (cálculo de faturas e interpretador, com TDD).
-
-Ao concluir uma etapa relevante, atualize esta seção.
+- `CalculadoraFatura` com os casos 1 e 4 (feito pelo Marco, com TDD).
+- **Em andamento: MVP 1 — substituir a planilha**, conduzido por agentes a partir de
+  `docs/backlog/mvp1.md`. O progresso fica no próprio backlog; esta seção só muda ao fim de
+  um MVP. Bot de WhatsApp e patrimônio ficam para os MVPs seguintes.
