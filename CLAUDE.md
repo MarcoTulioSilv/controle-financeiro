@@ -19,8 +19,8 @@ Por isso o código é escrito por agentes e **todo** ele passa pela revisão do 
   trabalhe fora de uma tarefa do backlog sem o Marco pedir.
 - **Fluxo:** o comando `/orquestrar` escolhe até duas tarefas prontas e lança o subagente
   `implementador` (em worktree isolada) para cada uma; o subagente `revisor` confere a
-  branch; o orquestrador faz o push com aprovação do Marco; o Marco abre, revisa e mergeia
-  o PR.
+  branch e, se aprovar, faz o push e abre o PR (via `gh`); o Marco revisa e mergeia o PR no
+  GitHub.
 - **Código para ser lido:** simples, com nomes do domínio, sem abstrações "para o futuro".
   Comentários só onde o *porquê* não é óbvio.
 - **Toda entrega ensina:** o relatório do PR tem a seção "Para aprender", com os conceitos
