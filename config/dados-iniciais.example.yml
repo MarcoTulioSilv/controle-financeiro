@@ -1,0 +1,84 @@
+# Exemplo dos dados iniciais do domicílio (versionado, só com os nomes fictícios do ERS).
+#
+# Como usar: copie para config/dados-iniciais.yml (que NÃO é versionado, ver .gitignore) e
+# troque pelos dados reais. A aplicação lê o arquivo toda vez que sobe:
+#   - o que ainda não existe no banco é criado;
+#   - o que já existe não é duplicado nem alterado (destinatário pela marcação, categoria pelo
+#     nome e tipo, palavra-chave pelo texto). Mudanças feitas depois pela tela são preservadas.
+#
+# Comparações ignoram acentos e maiúsculas (collation utf8mb4_0900_ai_ci): "farmacia" e
+# "Farmácia" são a mesma palavra-chave, e uma palavra-chave pertence a uma única categoria.
+
+# "Para quem" de cada lançamento (RF13). A marcação é a usada no bot; fica entre aspas porque
+# o @ tem significado especial no YAML.
+destinatarios:
+  - nome: Marco
+    marcacao-bot: "@mt"
+  - nome: Ana
+    marcacao-bot: "@ana"
+  - nome: Casa
+    marcacao-bot: "@casa"
+
+# Categorias do ERS, Apêndice A. "tipo" é RECEITA ou DESPESA; "ativa" é opcional (padrão true).
+categorias:
+  # ----- Despesas -----
+  - nome: Alimentação
+    tipo: DESPESA
+    palavras-chave: [mercado]
+  - nome: Compras
+    tipo: DESPESA
+  - nome: Saúde/Farmácia
+    tipo: DESPESA
+    palavras-chave: [farmácia]
+  - nome: Internet
+    tipo: DESPESA
+  - nome: Moto
+    tipo: DESPESA
+    palavras-chave: [gasolina]
+  - nome: Pessoal
+    tipo: DESPESA
+    palavras-chave: [unha]
+  - nome: Animais de estimação
+    tipo: DESPESA
+  - nome: Academia
+    tipo: DESPESA
+  - nome: Viagens
+    tipo: DESPESA
+  - nome: Carro
+    tipo: DESPESA
+  - nome: Lazer
+    tipo: DESPESA
+  - nome: Casa
+    tipo: DESPESA
+  - nome: Presentes
+    tipo: DESPESA
+  - nome: Operacional
+    tipo: DESPESA
+    palavras-chave: [claude, hospedagem, dominio, armazenamento, servidor]
+  - nome: Dívidas
+    tipo: DESPESA
+  - nome: Investimentos
+    tipo: DESPESA
+
+  # ----- Receitas -----
+  - nome: Trabalho A
+    tipo: RECEITA
+    palavras-chave: [pacote]
+  - nome: Trabalho B
+    tipo: RECEITA
+  - nome: Trabalho C
+    tipo: RECEITA
+  - nome: Projeto P
+    tipo: RECEITA
+  - nome: Bicos
+    tipo: RECEITA
+  - nome: Outros
+    tipo: RECEITA
+  - nome: Entregas
+    tipo: RECEITA
+  - nome: Investimentos
+    tipo: RECEITA
+  # Antigo emprego: preserva o histórico, mas não recebe novos lançamentos.
+  - nome: Empresa Anterior
+    tipo: RECEITA
+    ativa: false
