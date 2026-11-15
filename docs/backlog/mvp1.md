@@ -38,19 +38,19 @@ com Hibernate Envers (RNF06, além das colunas da convenção C7).
 ---
 
 ## T01 — Fundação de persistência
-- Status: [ ] a fazer
+- Status: [x] concluída
 - Tipo: chore · Branch: `chore/T01-fundacao-persistencia`
 - Depende de: —
 - Objetivo: preparar o `core` para usar o MySQL, com migrações e testes de integração.
 - Critérios de aceitação:
-  - [ ] Dependências: Spring Data JPA, driver MySQL, Flyway (com `flyway-mysql`) e Testcontainers. Versões gerenciadas pelo Spring Boot sempre que possível; as demais, fixas.
-  - [ ] `application.yaml` lê host, porta, banco, usuário e senha de variáveis de ambiente; nenhuma senha no repositório. Um perfil `local` aponta para `127.0.0.1:3307`.
-  - [ ] `spring.jpa.hibernate.ddl-auto=validate` (o schema vem só do Flyway) e `spring.jpa.open-in-view=false`.
-  - [ ] Datas e horas: o Hibernate grava momentos em UTC (C5); a aplicação usa `America/Sao_Paulo` nas regras de negócio.
-  - [ ] `EntidadeAuditavel` (`@MappedSuperclass`, pacote `compartilhado`) com `criado_em`, `criado_por`, `atualizado_em`, `atualizado_por` e `versao` (C7), usando a auditoria do Spring Data. Até a T08, o autor é `"sistema"`.
-  - [ ] Conversor JPA `YearMonth` ↔ `DATE` com dia 1 (C5), com testes.
-  - [ ] Os testes que sobem o contexto do Spring usam Testcontainers com MySQL 8.4 (`@ServiceConnection`), sem depender do MySQL local; passam no pipeline.
-  - [ ] README: seção "Rodando localmente" (variáveis do `.env`, perfil `local`).
+  - [x] Dependências: Spring Data JPA, driver MySQL, Flyway (com `flyway-mysql`) e Testcontainers. Versões gerenciadas pelo Spring Boot sempre que possível; as demais, fixas.
+  - [x] `application.yaml` lê host, porta, banco, usuário e senha de variáveis de ambiente; nenhuma senha no repositório. Um perfil `local` aponta para `127.0.0.1:3307`.
+  - [x] `spring.jpa.hibernate.ddl-auto=validate` (o schema vem só do Flyway) e `spring.jpa.open-in-view=false`.
+  - [x] Datas e horas: o Hibernate grava momentos em UTC (C5); a aplicação usa `America/Sao_Paulo` nas regras de negócio.
+  - [x] `EntidadeAuditavel` (`@MappedSuperclass`, pacote `compartilhado`) com `criado_em`, `criado_por`, `atualizado_em`, `atualizado_por` e `versao` (C7), usando a auditoria do Spring Data. Até a T08, o autor é `"sistema"`.
+  - [x] Conversor JPA `YearMonth` ↔ `DATE` com dia 1 (C5), com testes.
+  - [x] Os testes que sobem o contexto do Spring usam Testcontainers com MySQL 8.4 (`@ServiceConnection`), sem depender do MySQL local; passam no pipeline.
+  - [x] README: seção "Rodando localmente" (variáveis do `.env`, perfil `local`).
 - Referências: ADR-004, ADR-005; `docs/design/modelo-dados.md` (convenções C1–C8).
 
 ## T02 — CalculadoraFatura completa

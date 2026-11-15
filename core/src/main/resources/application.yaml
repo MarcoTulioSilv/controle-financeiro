@@ -1,3 +1,24 @@
 spring:
   application:
     name: financeiro
+
+  # Nenhuma credencial fica no repositório: tudo vem de variáveis de ambiente (.env).
+  # O padrão do host é "mysql", o nome do serviço no docker-compose.yml.
+  datasource:
+    url: jdbc:mysql://${MYSQL_HOST:mysql}:${MYSQL_PORT:3306}/${MYSQL_DATABASE}?connectionTimeZone=UTC
+    username: ${MYSQL_USER}
+    password: ${MYSQL_PASSWORD}
+
+  jpa:
+    # O schema vem SÓ do Flyway; o Hibernate apenas confere se o mapeamento combina com o banco.
+    hibernate:
+      ddl-auto: validate
+    # Fecha a sessão no fim do serviço, e não no fim da requisição: nada de consultas
+    # escondidas durante a renderização da tela.
+    open-in-view: false
+    properties:
+      hibernate:
+        jdbc:
+          # C5: momentos (Instant) são gravados em UTC; o fuso de São Paulo só aparece nas
+          # regras de negócio (ConfiguracaoTempo).
+          time_zone: UTC

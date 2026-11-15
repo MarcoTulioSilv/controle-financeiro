@@ -1,0 +1,17 @@
+# Perfil "teste", ativado por TesteDeIntegracao.
+#
+# Fica num arquivo de perfil (e não num application.yaml de teste) para não substituir o
+# application.yaml da aplicação: assim os testes exercitam as configurações de verdade
+# (ddl-auto=validate, open-in-view=false, Hibernate em UTC).
+#
+# A conexão real vem do container do Testcontainers (@ServiceConnection, em
+# ConfiguracaoMySqlDeTeste); os valores abaixo só substituem os placeholders que, na
+# aplicação, vêm das variáveis de ambiente.
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/financeiro_teste
+    username: financeiro_teste
+    password: financeiro_teste
+  flyway:
+    # Além das migrações da aplicação, os testes criam as tabelas de apoio dos próprios testes.
+    locations: classpath:db/migration,classpath:db/migracao-teste
