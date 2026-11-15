@@ -1,8 +1,10 @@
 package com.marcotulio.financeiro.cartao;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
 
 import java.time.LocalDate;
+import java.util.Map;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -132,5 +134,86 @@ class CalendarioBancarioTest {
 
         // Assert (verificar)
         assertThat(pascoa).isEqualTo(pascoaEsperada);
+    }
+
+    // Os feriados esperados de 2026 e 2027 conferem com o calendário de feriados bancários
+    // nacionais da Febraban e com as leis citadas em CalendarioBancario.feriadosNacionais.
+
+    @Test
+    void feriadosNacionaisDe2026ConferemComOCalendarioDaFebraban() {
+        // Arrange (preparar): Páscoa em 05/04/2026
+        int ano = 2026;
+
+        // Act (agir)
+        Map<LocalDate, String> feriados = calendario.feriadosNacionais(ano);
+
+        // Assert (verificar)
+        assertThat(feriados).containsOnly(
+                entry(LocalDate.of(2026, 1, 1), "Confraternização Universal"),
+                entry(LocalDate.of(2026, 2, 16), "Carnaval (segunda-feira)"),
+                entry(LocalDate.of(2026, 2, 17), "Carnaval (terça-feira)"),
+                entry(LocalDate.of(2026, 4, 3), "Sexta-feira Santa"),
+                entry(LocalDate.of(2026, 4, 21), "Tiradentes"),
+                entry(LocalDate.of(2026, 5, 1), "Dia do Trabalho"),
+                entry(LocalDate.of(2026, 6, 4), "Corpus Christi"),
+                entry(LocalDate.of(2026, 9, 7), "Independência do Brasil"),
+                entry(LocalDate.of(2026, 10, 12), "Nossa Senhora Aparecida"),
+                entry(LocalDate.of(2026, 11, 2), "Finados"),
+                entry(LocalDate.of(2026, 11, 15), "Proclamação da República"),
+                entry(LocalDate.of(2026, 11, 20), "Dia Nacional de Zumbi e da Consciência Negra"),
+                entry(LocalDate.of(2026, 12, 25), "Natal"));
+    }
+
+    @Test
+    void feriadosNacionaisDe2027ConferemComOCalendarioDaFebraban() {
+        // Arrange (preparar): Páscoa em 28/03/2027, Carnaval ainda em fevereiro
+        int ano = 2027;
+
+        // Act (agir)
+        Map<LocalDate, String> feriados = calendario.feriadosNacionais(ano);
+
+        // Assert (verificar)
+        assertThat(feriados).containsOnly(
+                entry(LocalDate.of(2027, 1, 1), "Confraternização Universal"),
+                entry(LocalDate.of(2027, 2, 8), "Carnaval (segunda-feira)"),
+                entry(LocalDate.of(2027, 2, 9), "Carnaval (terça-feira)"),
+                entry(LocalDate.of(2027, 3, 26), "Sexta-feira Santa"),
+                entry(LocalDate.of(2027, 4, 21), "Tiradentes"),
+                entry(LocalDate.of(2027, 5, 1), "Dia do Trabalho"),
+                entry(LocalDate.of(2027, 5, 27), "Corpus Christi"),
+                entry(LocalDate.of(2027, 9, 7), "Independência do Brasil"),
+                entry(LocalDate.of(2027, 10, 12), "Nossa Senhora Aparecida"),
+                entry(LocalDate.of(2027, 11, 2), "Finados"),
+                entry(LocalDate.of(2027, 11, 15), "Proclamação da República"),
+                entry(LocalDate.of(2027, 11, 20), "Dia Nacional de Zumbi e da Consciência Negra"),
+                entry(LocalDate.of(2027, 12, 25), "Natal"));
+    }
+
+    @Test
+    void conscienciaNegraSoEntraAPartirDe2024() {
+        // Arrange (preparar): a Lei 14.759 é de 21/12/2023
+        LocalDate vinteDeNovembroDe2023 = LocalDate.of(2023, 11, 20);
+        LocalDate vinteDeNovembroDe2024 = LocalDate.of(2024, 11, 20);
+
+        // Act (agir)
+        Map<LocalDate, String> feriadosDe2023 = calendario.feriadosNacionais(2023);
+        Map<LocalDate, String> feriadosDe2024 = calendario.feriadosNacionais(2024);
+
+        // Assert (verificar)
+        assertThat(feriadosDe2023).doesNotContainKey(vinteDeNovembroDe2023);
+        assertThat(feriadosDe2024).containsKey(vinteDeNovembroDe2024);
+    }
+
+    @Test
+    void feriadosNacionaisAlimentamOProximoDiaUtil() {
+        // Arrange (preparar): vencimento nominal no Carnaval de 2027, segunda 08/02
+        LocalDate vencimentoNominal = LocalDate.of(2027, 2, 8);
+
+        // Act (agir)
+        LocalDate vencimentoEfetivo = calendario.proximoDiaUtil(
+                vencimentoNominal, calendario.feriadosNacionais(2027).keySet());
+
+        // Assert (verificar): quarta-feira de Cinzas, 10/02/2027
+        assertThat(vencimentoEfetivo).isEqualTo(LocalDate.of(2027, 2, 10));
     }
 }

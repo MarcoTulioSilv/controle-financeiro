@@ -2,7 +2,10 @@ package com.marcotulio.financeiro.cartao;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.util.Collections;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 /**
  * Dias úteis bancários (RF16): usado para achar o vencimento efetivo de uma fatura (RF14, RN03).
@@ -17,6 +20,40 @@ public final class CalendarioBancario {
             dia = dia.plusDays(1);
         }
         return dia;
+    }
+
+    /**
+     * Os feriados sem expediente bancário em todo o país no {@code ano}, com a descrição
+     * de cada um, em ordem de data.
+     *
+     * <p>Fontes: Lei 662/1949 (com a redação da Lei 10.607/2002), Lei 6.802/1980 (Nossa Senhora
+     * Aparecida), Lei 14.759/2023 (Consciência Negra, desde 2024), Lei 9.093/1995 (Sexta-feira
+     * Santa) e o calendário de feriados bancários nacionais da Febraban, que também fecha os
+     * bancos na segunda e na terça de Carnaval e em Corpus Christi.
+     */
+    public Map<LocalDate, String> feriadosNacionais(int ano) {
+        Map<LocalDate, String> feriados = new TreeMap<>();
+
+        feriados.put(LocalDate.of(ano, 1, 1), "Confraternização Universal");
+        feriados.put(LocalDate.of(ano, 4, 21), "Tiradentes");
+        feriados.put(LocalDate.of(ano, 5, 1), "Dia do Trabalho");
+        feriados.put(LocalDate.of(ano, 9, 7), "Independência do Brasil");
+        feriados.put(LocalDate.of(ano, 10, 12), "Nossa Senhora Aparecida");
+        feriados.put(LocalDate.of(ano, 11, 2), "Finados");
+        feriados.put(LocalDate.of(ano, 11, 15), "Proclamação da República");
+        if (ano >= 2024) {
+            feriados.put(LocalDate.of(ano, 11, 20), "Dia Nacional de Zumbi e da Consciência Negra");
+        }
+        feriados.put(LocalDate.of(ano, 12, 25), "Natal");
+
+        // Os feriados móveis são contados a partir do domingo de Páscoa.
+        LocalDate pascoa = domingoDePascoa(ano);
+        feriados.put(pascoa.minusDays(48), "Carnaval (segunda-feira)");
+        feriados.put(pascoa.minusDays(47), "Carnaval (terça-feira)");
+        feriados.put(pascoa.minusDays(2), "Sexta-feira Santa");
+        feriados.put(pascoa.plusDays(60), "Corpus Christi");
+
+        return Collections.unmodifiableMap(feriados);
     }
 
     /**
