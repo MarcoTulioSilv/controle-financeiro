@@ -82,16 +82,16 @@ com Hibernate Envers (RNF06, além das colunas da convenção C7).
 - Referências: ERS RF14, RF16, RN03.
 
 ## T04 — Cadastros básicos e dados iniciais
-- Status: [ ] a fazer
+- Status: [x] concluída
 - Tipo: feat · Branch: `feat/T04-cadastros-basicos`
 - Depende de: T01
 - Objetivo: destinatários, categorias e palavras-chave, com carga de dados iniciais local.
 - Critérios de aceitação:
-  - [ ] Migrações de `destinatario`, `categoria` e `palavra_chave`, fiéis ao `modelo-dados.md` (tipos, `CHECK`s, `UNIQUE`, charset e collation).
-  - [ ] Entidades e repositórios **sem** `public`; um serviço público por assunto (M5).
-  - [ ] Categoria é desativada, nunca excluída (RF02).
-  - [ ] Carga de dados iniciais a partir de `config/dados-iniciais.yml` (não versionado; entra no `.gitignore`), idempotente: rodar duas vezes não duplica nada. Arquivo de exemplo versionado: `config/dados-iniciais.example.yml`, com os nomes fictícios do ERS (Apêndice A).
-  - [ ] Testes de integração das restrições, inclusive a collation: `farmacia` e `Farmácia` são a mesma palavra-chave.
+  - [x] Migrações de `destinatario`, `categoria` e `palavra_chave`, fiéis ao `modelo-dados.md` (tipos, `CHECK`s, `UNIQUE`, charset e collation).
+  - [x] Entidades e repositórios **sem** `public`; um serviço público por assunto (M5).
+  - [x] Categoria é desativada, nunca excluída (RF02).
+  - [x] Carga de dados iniciais a partir de `config/dados-iniciais.yml` (não versionado; entra no `.gitignore`), idempotente: rodar duas vezes não duplica nada. Arquivo de exemplo versionado: `config/dados-iniciais.example.yml`, com os nomes fictícios do ERS (Apêndice A).
+  - [x] Testes de integração das restrições, inclusive a collation: `farmacia` e `Farmácia` são a mesma palavra-chave.
 - Referências: ERS RF02, RF13, Apêndice A; `modelo-dados.md`, bloco A.
 
 ## T05 — Cartões, faturas e feriados
