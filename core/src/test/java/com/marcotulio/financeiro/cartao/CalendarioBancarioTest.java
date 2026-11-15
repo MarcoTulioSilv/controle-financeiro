@@ -5,6 +5,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.time.LocalDate;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 class CalendarioBancarioTest {
 
@@ -109,5 +111,26 @@ class CalendarioBancarioTest {
 
         // Assert (verificar)
         assertThat(resultado).isEqualTo(LocalDate.of(2023, 1, 2));
+    }
+
+    @ParameterizedTest(name = "Páscoa de {0}: {1}")
+    @CsvSource({
+        "2008, 2008-03-23", // Páscoa cedo
+        "2011, 2011-04-24", // Páscoa tarde
+        "2024, 2024-03-31",
+        "2025, 2025-04-20",
+        "2026, 2026-04-05",
+        "2027, 2027-03-28",
+        "2038, 2038-04-25", // a data mais tarde possível (25/04)
+        "2285, 2285-03-22"  // a data mais cedo possível (22/03)
+    })
+    void calculaODomingoDePascoa(int ano, LocalDate pascoaEsperada) {
+        // Arrange (preparar): o ano e a data conhecida vêm do @CsvSource
+
+        // Act (agir)
+        LocalDate pascoa = CalendarioBancario.domingoDePascoa(ano);
+
+        // Assert (verificar)
+        assertThat(pascoa).isEqualTo(pascoaEsperada);
     }
 }
