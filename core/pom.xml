@@ -46,6 +46,11 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
+		<!-- Login, sessão, CSRF e hash de senha (RNF02). -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
 		<!-- Flyway cria e evolui o schema; o flyway-mysql ensina o Flyway a falar MySQL. -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -85,6 +90,12 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-flyway-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<!-- Simula usuário logado e token CSRF nos testes da camada web. -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security-test</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<!-- Testcontainers: sobe um MySQL real em container durante os testes. -->
