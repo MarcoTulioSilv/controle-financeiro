@@ -167,6 +167,26 @@ class RestricoesDoCadastroTest extends TesteDeIntegracao {
                 .isInstanceOf(DataIntegrityViolationException.class);
     }
 
+    // ----- usuario -----
+
+    @Test
+    void usuarioNaoAceitaLoginRepetidoNemComOutraCaixa() {
+        // Arrange
+        long destinatario = inserirDestinatarioERetornarId("Visitante", "@vis");
+        inserirUsuario("Visitante", "visitante", destinatario);
+
+        // Act e Assert: pela collation, VISITANTE e visitante são o mesmo login.
+        assertThatThrownBy(() -> inserirUsuario("Outro", "VISITANTE", destinatario))
+                .isInstanceOf(DataIntegrityViolationException.class);
+    }
+
+    @Test
+    void usuarioExigeDestinatarioExistente() {
+        // Act e Assert
+        assertThatThrownBy(() -> inserirUsuario("Visitante", "visitante", -1L))
+                .isInstanceOf(DataIntegrityViolationException.class);
+    }
+
     // ----- charset e collation (C3) -----
 
     @Test
@@ -175,14 +195,13 @@ class RestricoesDoCadastroTest extends TesteDeIntegracao {
         var collations = jdbc.sql("""
                         SELECT table_collation FROM information_schema.tables
                          WHERE table_schema = DATABASE()
-                           AND table_name IN ('destinatario', 'categoria', 'palavra_chave')
+                           AND table_name IN ('destinatario', 'categoria', 'palavra_chave', 'usuario')
                         """)
                 .query(String.class)
                 .list();
 
         // Assert
-        assertThat(collations).containsExactly(
-                "utf8mb4_0900_ai_ci", "utf8mb4_0900_ai_ci", "utf8mb4_0900_ai_ci");
+        assertThat(collations).hasSize(4).containsOnly("utf8mb4_0900_ai_ci");
     }
 
     // ----- auxiliares -----
@@ -193,6 +212,20 @@ class RestricoesDoCadastroTest extends TesteDeIntegracao {
                         VALUES (?, ?, %s)
                         """.formatted(COLUNAS_C7, VALORES_C7))
                 .params(nome, marcacaoBot)
+                .update();
+    }
+
+    private long inserirDestinatarioERetornarId(String nome, String marcacaoBot) {
+        inserirDestinatario(nome, marcacaoBot);
+        return ultimoIdGerado();
+    }
+
+    private void inserirUsuario(String nome, String login, long destinatarioId) {
+        jdbc.sql("""
+                        INSERT INTO usuario (nome, login, senha_hash, destinatario_id, %s)
+                        VALUES (?, ?, '{bcrypt}hash-de-teste', ?, %s)
+                        """.formatted(COLUNAS_C7, VALORES_C7))
+                .params(nome, login, destinatarioId)
                 .update();
     }
 
