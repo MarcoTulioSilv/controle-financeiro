@@ -2,6 +2,7 @@ package com.marcotulio.financeiro.cadastro;
 
 import com.marcotulio.financeiro.cadastro.DadosIniciaisDoCadastro.CategoriaInicial;
 import com.marcotulio.financeiro.cadastro.DadosIniciaisDoCadastro.DestinatarioInicial;
+import com.marcotulio.financeiro.cadastro.DadosIniciaisDoCadastro.UsuarioInicial;
 import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +16,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
 /**
- * Carrega destinatários, categorias e palavras-chave do arquivo de dados iniciais toda vez que a
+ * Carrega destinatários, categorias, palavras-chave e usuários do arquivo de dados iniciais toda vez que a
  * aplicação sobe.
  *
  * <p>O arquivo real tem dados do domicílio e por isso fica fora do Git; se ele não existir, nada
@@ -29,14 +30,17 @@ class CargaCadastrosIniciais implements ApplicationRunner {
 
     private final ServicoDestinatarios destinatarios;
     private final ServicoCategorias categorias;
+    private final ServicoUsuarios usuarios;
     private final Resource arquivo;
 
     CargaCadastrosIniciais(
             ServicoDestinatarios destinatarios,
             ServicoCategorias categorias,
+            ServicoUsuarios usuarios,
             @Value("${financeiro.dados-iniciais.arquivo}") Resource arquivo) {
         this.destinatarios = destinatarios;
         this.categorias = categorias;
+        this.usuarios = usuarios;
         this.arquivo = arquivo;
     }
 
@@ -64,10 +68,15 @@ class CargaCadastrosIniciais implements ApplicationRunner {
                 categorias.associarPalavraChaveSeAusente(palavraChave, gravada.id());
             }
         }
+        // Depois dos destinatários, porque cada usuário aponta para um deles.
+        for (UsuarioInicial usuario : dados.usuarios()) {
+            usuarios.cadastrarSeAusente(
+                    usuario.nome(), usuario.login(), usuario.senhaInicial(), usuario.destinatario());
+        }
 
         // Só as quantidades: nomes do domicílio não vão para o log.
-        LOG.info("Dados iniciais conferidos: {} destinatários e {} categorias no arquivo.",
-                dados.destinatarios().size(), dados.categorias().size());
+        LOG.info("Dados iniciais conferidos: {} destinatários, {} categorias e {} usuários no arquivo.",
+                dados.destinatarios().size(), dados.categorias().size(), dados.usuarios().size());
     }
 
     /**
