@@ -22,3 +22,10 @@ spring:
           # C5: momentos (Instant) são gravados em UTC; o fuso de São Paulo só aparece nas
           # regras de negócio (ConfiguracaoTempo).
           time_zone: UTC
+
+financeiro:
+  dados-iniciais:
+    # Dados reais do domicílio, fora do Git (modelo: config/dados-iniciais.example.yml).
+    # O caminho é relativo à pasta core/, onde a aplicação roda no notebook. Se o arquivo não
+    # existir, nada é carregado.
+    arquivo: file:../config/dados-iniciais.yml

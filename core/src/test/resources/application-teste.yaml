@@ -15,3 +15,10 @@ spring:
   flyway:
     # Além das migrações da aplicação, os testes criam as tabelas de apoio dos próprios testes.
     locations: classpath:db/migration,classpath:db/migracao-teste
+
+financeiro:
+  dados-iniciais:
+    # Os testes nunca leem o config/dados-iniciais.yml real. Este arquivo não existe, então a
+    # carga automática na subida não grava nada; o CargaCadastrosIniciaisTest chama a carga
+    # com o exemplo versionado.
+    arquivo: classpath:dados-iniciais-ausente-nos-testes.yml
