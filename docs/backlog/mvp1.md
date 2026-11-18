@@ -71,14 +71,14 @@ com Hibernate Envers (RNF06, além das colunas da convenção C7).
 - Referências: ERS RF14, RN03; `docs/design/interpretador.md`, seção 6.
 
 ## T03 — CalendarioBancario (parte pura)
-- Status: [ ] a fazer
+- Status: [x] concluída
 - Tipo: feat · Branch: `feat/T03-calendario-bancario`
 - Depende de: —
 - Objetivo: calcular o vencimento efetivo (próximo dia útil).
 - Critérios de aceitação:
-  - [ ] `proximoDiaUtil(LocalDate, Set<LocalDate> feriados)`: sábado, domingo e feriado avançam para o próximo dia útil; dia útil devolve a própria data. Testes com fim de semana, feriado na segunda e feriados emendados.
-  - [ ] `feriadosNacionais(int ano)`: feriados nacionais fixos e móveis (a Páscoa calculada por algoritmo, e os dependentes dela) considerados dias sem expediente bancário. O relatório cita a fonte oficial usada (lei ou calendário da Febraban), e os testes verificam pelo menos dois anos contra essa fonte.
-  - [ ] Pacote `cartao`, classe pura (sem Spring, sem JPA).
+  - [x] `proximoDiaUtil(LocalDate, Set<LocalDate> feriados)`: sábado, domingo e feriado avançam para o próximo dia útil; dia útil devolve a própria data. Testes com fim de semana, feriado na segunda e feriados emendados.
+  - [x] `feriadosNacionais(int ano)`: feriados nacionais fixos e móveis (a Páscoa calculada por algoritmo, e os dependentes dela) considerados dias sem expediente bancário. O relatório cita a fonte oficial usada (lei ou calendário da Febraban), e os testes verificam pelo menos dois anos contra essa fonte.
+  - [x] Pacote `cartao`, classe pura (sem Spring, sem JPA).
 - Referências: ERS RF14, RF16, RN03.
 
 ## T04 — Cadastros básicos e dados iniciais
