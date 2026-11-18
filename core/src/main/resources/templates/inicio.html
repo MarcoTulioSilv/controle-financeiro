@@ -9,6 +9,7 @@
 <main>
     <h1>Controle Financeiro</h1>
     <p>Conectado como <strong th:text="${login}">login</strong>.</p>
+    <p><a th:href="@{/conta/senha}">Trocar senha</a></p>
 
     <!-- Sair é um POST (com o token CSRF), para que um link em outro site não desconecte ninguém. -->
     <form th:action="@{/logout}" method="post">
