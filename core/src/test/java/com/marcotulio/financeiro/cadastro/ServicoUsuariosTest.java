@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.marcotulio.financeiro.TesteDeIntegracao;
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,9 @@ class ServicoUsuariosTest extends TesteDeIntegracao {
 
     @Autowired
     private JdbcClient jdbc;
+
+    @Autowired
+    private EntityManager entityManager;
 
     @BeforeEach
     void cadastraODestinatarioDoUsuario() {
@@ -146,6 +150,9 @@ class ServicoUsuariosTest extends TesteDeIntegracao {
     }
 
     private String senhaHashDe(String login) {
+        // O JDBC lê o banco por fora do Hibernate: sem o flush, a alteração feita na
+        // entidade ainda não virou UPDATE (o teste é @Transactional e nunca chega ao commit).
+        entityManager.flush();
         return jdbc.sql("SELECT senha_hash FROM usuario WHERE login = ?")
                 .param(login)
                 .query(String.class)
