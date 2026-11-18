@@ -23,6 +23,15 @@ spring:
           # regras de negócio (ConfiguracaoTempo).
           time_zone: UTC
 
+server:
+  servlet:
+    session:
+      cookie:
+        # O JavaScript da página não lê o cookie de sessão (protege contra roubo da sessão
+        # por XSS), e o navegador não o envia em requisições vindas de outro site (CSRF).
+        http-only: true
+        same-site: strict
+
 financeiro:
   dados-iniciais:
     # Dados reais do domicílio, fora do Git (modelo: config/dados-iniciais.example.yml).
