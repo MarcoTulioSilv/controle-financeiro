@@ -135,16 +135,16 @@ com Hibernate Envers (RNF06, além das colunas da convenção C7).
 - Referências: ERS RF12; ADR-005; `modelo-dados.md`, bloco B; `maquinas-estado.md`, seção 2 (só o estado ATIVA no MVP 1).
 
 ## T08 — Login e segurança web
-- Status: [ ] a fazer
+- Status: [x] concluída
 - Tipo: feat · Branch: `feat/T08-login-seguranca`
 - Depende de: T04
 - Objetivo: acesso autenticado à interface web.
 - Critérios de aceitação:
-  - [ ] Migração de `usuario`, fiel ao modelo (bloco A).
-  - [ ] Usuários vêm de `config/dados-iniciais.yml`; a senha inicial é convertida em hash forte (Spring Security) na carga e nunca gravada em texto. Página para o usuário trocar a própria senha.
-  - [ ] Login por formulário, logout, CSRF ativo, cookie de sessão `HttpOnly` e `SameSite`.
-  - [ ] Bloqueio temporário após tentativas seguidas de senha errada, com teste.
-  - [ ] O autor da auditoria (C7) passa a ser o usuário logado.
+  - [x] Migração de `usuario`, fiel ao modelo (bloco A).
+  - [x] Usuários vêm de `config/dados-iniciais.yml`; a senha inicial é convertida em hash forte (Spring Security) na carga e nunca gravada em texto. Página para o usuário trocar a própria senha.
+  - [x] Login por formulário, logout, CSRF ativo, cookie de sessão `HttpOnly` e `SameSite`.
+  - [x] Bloqueio temporário após tentativas seguidas de senha errada, com teste.
+  - [x] O autor da auditoria (C7) passa a ser o usuário logado.
 - Referências: ERS RF06, RNF02; ADR-004.
 
 ## T09 — Tela de lançamentos
