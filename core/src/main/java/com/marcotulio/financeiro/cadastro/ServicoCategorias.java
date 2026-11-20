@@ -54,6 +54,15 @@ public class ServicoCategorias {
         }
     }
 
+    /**
+     * Se o texto já é uma palavra-chave, ignorando acentos e maiúsculas (collation C3). Usado pelo
+     * cadastro de cartões: o apelido de um cartão não pode ser também uma palavra-chave (RF14).
+     */
+    @Transactional(readOnly = true)
+    public boolean existePalavraChave(String texto) {
+        return palavrasChave.existsByTexto(texto);
+    }
+
     private Categoria buscar(long categoriaId) {
         return categorias.findById(categoriaId)
                 .orElseThrow(() -> new IllegalArgumentException(

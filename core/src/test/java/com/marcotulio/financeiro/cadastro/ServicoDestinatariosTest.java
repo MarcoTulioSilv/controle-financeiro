@@ -55,6 +55,16 @@ class ServicoDestinatariosTest extends TesteDeIntegracao {
                 .isInstanceOf(DataIntegrityViolationException.class);
     }
 
+    @Test
+    void reconheceMarcacaoCadastradaSemDiferenciarMaiusculas() {
+        // Arrange
+        servico.cadastrarSeAusente("Visitante", "@vis");
+
+        // Act e Assert
+        assertThat(servico.existeMarcacao("@VIS")).isTrue();
+        assertThat(servico.existeMarcacao("@outro")).isFalse();
+    }
+
     private int contarComMarcacao(String marcacaoBot) {
         return jdbc.sql("SELECT COUNT(*) FROM destinatario WHERE marcacao_bot = ?")
                 .param(marcacaoBot)

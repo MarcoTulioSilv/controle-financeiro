@@ -54,6 +54,15 @@ public class ServicoUsuarios {
     }
 
     /**
+     * O id do usuário com esse login, sem diferenciar maiúsculas. Outros módulos guardam só o id
+     * (ex.: o titular de um cartão), pois a entidade {@link Usuario} não sai do cadastro (M5).
+     */
+    @Transactional(readOnly = true)
+    public Optional<Long> buscarIdPeloLogin(String login) {
+        return usuarios.findByLogin(login).map(Usuario::getId);
+    }
+
+    /**
      * Troca a senha do próprio usuário. Exigir a senha atual impede que alguém com uma sessão
      * aberta nas mãos (o celular esquecido na mesa) troque a senha e tome a conta.
      *

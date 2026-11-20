@@ -25,4 +25,13 @@ public class ServicoDestinatarios {
                 .orElseGet(() -> repositorio.save(new Destinatario(nome, marcacaoBot)));
         return destinatario.paraConsulta();
     }
+
+    /**
+     * Se a marcação já pertence a um destinatário, sem diferenciar maiúsculas (collation C3).
+     * Usado pelo cadastro de cartões: o apelido de um cartão não pode ser uma marcação (RF14).
+     */
+    @Transactional(readOnly = true)
+    public boolean existeMarcacao(String marcacaoBot) {
+        return repositorio.findByMarcacaoBot(marcacaoBot).isPresent();
+    }
 }

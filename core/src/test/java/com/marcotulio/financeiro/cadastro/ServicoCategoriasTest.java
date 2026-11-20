@@ -202,6 +202,18 @@ class ServicoCategoriasTest extends TesteDeIntegracao {
                 .hasMessageContaining("-1");
     }
 
+    @Test
+    void reconhecePalavraChaveCadastradaSemDiferenciarAcentosNemMaiusculas() {
+        // Arrange
+        CategoriaCadastrada categoria =
+                servico.cadastrarSeAusente("Categoria de teste", TipoCategoria.DESPESA, true);
+        servico.associarPalavraChaveSeAusente("Drogaria Teste", categoria.id());
+
+        // Act e Assert
+        assertThat(servico.existePalavraChave("drogária teste")).isTrue();
+        assertThat(servico.existePalavraChave("xpto")).isFalse();
+    }
+
     private long categoriaDaPalavra(String texto) {
         return jdbc.sql("SELECT categoria_id FROM palavra_chave WHERE texto = ?")
                 .param(texto)
