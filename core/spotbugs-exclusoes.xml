@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Alertas do SpotBugs/FindSecBugs aceitos depois de revisados (T15).
+  Regra da casa: toda exclusão é a mais estreita possível (classe + método + tipo de alerta)
+  e vem com a justificativa logo acima. Alerta novo sem justificativa reprova o verify.
+-->
+<FindBugsFilter>
+
+  <!--
+    SPRING_ENDPOINT não aponta defeito: é um inventário ("aqui há um endpoint, revise-o").
+    A revisão é garantida de outro jeito: ConfiguracaoSeguranca exige login em toda rota
+    (anyRequest().authenticated()), exceto /login, e os testes *WebTest verificam isso.
+  -->
+  <Match>
+    <Bug pattern="SPRING_ENDPOINT"/>
+  </Match>
+
+  <!--
+    CRLF_INJECTION_LOGS: o texto registrado é a descrição do arquivo de dados iniciais,
+    que vem da configuração da aplicação (financeiro.dados-iniciais.arquivo), não de quem
+    usa o sistema. Não há como um atacante inserir quebras de linha nesse log.
+  -->
+  <Match>
+    <Class name="com.marcotulio.financeiro.cadastro.CargaCadastrosIniciais"/>
+    <Method name="carregar"/>
+    <Bug pattern="CRLF_INJECTION_LOGS"/>
+  </Match>
+
+  <!--
+    THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION: HttpSecurity.build(), do Spring Security,
+    declara "throws Exception"; o método do bean só repassa o que a API impõe.
+  -->
+  <Match>
+    <Class name="com.marcotulio.financeiro.seguranca.ConfiguracaoSeguranca"/>
+    <Method name="filtrosDeSeguranca"/>
+    <Bug pattern="THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION"/>
+  </Match>
+
+  <!--
+    UNVALIDATED_REDIRECT: o destino é o context path do servidor (configuração, não entrada
+    do usuário) seguido de "/login?bloqueado" ou "/login?erro", textos fixos no código.
+    Não há como redirecionar para um site externo.
+  -->
+  <Match>
+    <Class name="com.marcotulio.financeiro.seguranca.ConfiguracaoSeguranca"/>
+    <Method name="voltarAoLoginComOMotivo"/>
+    <Bug pattern="UNVALIDATED_REDIRECT"/>
+  </Match>
+
+  <!--
+    IMPROPER_UNICODE: o alerta avisa que normalizar e mudar a caixa pode tornar iguais
+    textos diferentes. Aqui é exatamente o objetivo: a chave da contagem de tentativas
+    de login precisa considerar iguais os logins que o banco considera iguais
+    (collation utf8mb4_0900_ai_ci), senão variar acentos daria novas tentativas.
+  -->
+  <Match>
+    <Class name="com.marcotulio.financeiro.seguranca.ControleDeTentativasDeLogin"/>
+    <Method name="chave"/>
+    <Bug pattern="IMPROPER_UNICODE"/>
+  </Match>
+
+</FindBugsFilter>

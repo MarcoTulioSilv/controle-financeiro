@@ -30,6 +30,8 @@
 		<java.version>25</java.version>
 		<!-- Plugins que o Spring Boot não gerencia: versões fixadas aqui. -->
 		<jacoco.version>0.8.16</jacoco.version>
+		<spotbugs-maven-plugin.version>4.10.5.0</spotbugs-maven-plugin.version>
+		<findsecbugs.version>1.14.0</findsecbugs.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -206,6 +208,38 @@
 								</rule>
 							</rules>
 						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<!--
+				SpotBugs procura defeitos no bytecode compilado (análise estática); o
+				FindSecBugs acrescenta regras de segurança (injeção, criptografia fraca etc.).
+				O "check" reprova o verify se houver alerta. Alertas aceitos ficam em
+				spotbugs-exclusoes.xml, cada um com a sua justificativa.
+			-->
+			<plugin>
+				<groupId>com.github.spotbugs</groupId>
+				<artifactId>spotbugs-maven-plugin</artifactId>
+				<version>${spotbugs-maven-plugin.version}</version>
+				<configuration>
+					<effort>Max</effort>
+					<threshold>Low</threshold>
+					<excludeFilterFile>spotbugs-exclusoes.xml</excludeFilterFile>
+					<plugins>
+						<plugin>
+							<groupId>com.h3xstream.findsecbugs</groupId>
+							<artifactId>findsecbugs-plugin</artifactId>
+							<version>${findsecbugs.version}</version>
+						</plugin>
+					</plugins>
+				</configuration>
+				<executions>
+					<execution>
+						<id>analise-estatica</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>check</goal>
+						</goals>
 					</execution>
 				</executions>
 			</plugin>
