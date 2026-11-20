@@ -214,12 +214,12 @@ com Hibernate Envers (RNF06, além das colunas da convenção C7).
 - Referências: ERS RNF01, RNF03, RNF09; ADR-003.
 
 ## T15 — Endurecimento do pipeline
-- Status: [ ] a fazer
+- Status: [x] concluída
 - Tipo: chore · Branch: `chore/T15-endurecimento-pipeline`
 - Depende de: T01
 - Objetivo: completar as verificações previstas no CLAUDE.md.
 - Critérios de aceitação:
-  - [ ] JaCoCo no `verify`, reprovando abaixo de 90% nos pacotes `cartao` e nas classes de valores monetários.
-  - [ ] Semgrep e SpotBugs com FindSecBugs no pipeline, com as actions fixadas por hash.
-  - [ ] Nenhum alerta pendente sem justificativa registrada.
+  - [x] JaCoCo no `verify`, reprovando abaixo de 90% nos pacotes `cartao` e nas classes de valores monetários.
+  - [x] Semgrep e SpotBugs com FindSecBugs no pipeline, com as actions fixadas por hash.
+  - [x] Nenhum alerta pendente sem justificativa registrada.
 - Referências: CLAUDE.md, seção 6.
