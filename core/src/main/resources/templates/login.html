@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Entrar · Controle Financeiro</title>
+</head>
+<body>
+<main>
+    <h1>Controle Financeiro</h1>
+
+    <p th:if="${param.erro}" role="alert">Login ou senha inválidos.</p>
+    <p th:if="${param.bloqueado}" role="alert">
+        Acesso bloqueado por excesso de senhas erradas. Tente de novo em 15 minutos.
+    </p>
+    <p th:if="${param.saiu}">Você saiu.</p>
+
+    <!-- th:action faz o Thymeleaf incluir o token CSRF num campo oculto. -->
+    <form th:action="@{/login}" method="post">
+        <p>
+            <label for="login">Login</label><br>
+            <input id="login" name="login" type="text" autocomplete="username"
+                   autocapitalize="none" required autofocus>
+        </p>
+        <p>
+            <label for="senha">Senha</label><br>
+            <input id="senha" name="senha" type="password" autocomplete="current-password"
+                   required>
+        </p>
+        <button type="submit">Entrar</button>
+    </form>
+</main>
+</body>
+</html>

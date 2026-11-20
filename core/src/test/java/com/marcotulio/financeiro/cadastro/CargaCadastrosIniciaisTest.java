@@ -12,6 +12,7 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.jdbc.core.simple.JdbcClient;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -33,6 +34,12 @@ class CargaCadastrosIniciaisTest extends TesteDeIntegracao {
     @Autowired
     private JdbcClient jdbc;
 
+    @Autowired
+    private PasswordEncoder codificadorDeSenha;
+
+    /** A senha fictícia do exemplo versionado, que o usuário troca no primeiro acesso. */
+    private static final String SENHA_INICIAL_DO_EXEMPLO = "troque-esta-senha";
+
     @Test
     void carregaOsDestinatariosDoExemplo() throws Exception {
         // Act
@@ -41,6 +48,28 @@ class CargaCadastrosIniciaisTest extends TesteDeIntegracao {
         // Assert
         assertThat(jdbc.sql("SELECT marcacao_bot FROM destinatario").query(String.class).list())
                 .containsExactlyInAnyOrder("@mt", "@ana", "@casa");
+    }
+
+    @Test
+    void carregaOsUsuariosDoExemploComASenhaEmHash() throws Exception {
+        // Act
+        carga.carregar(EXEMPLO);
+
+        // Assert: cada usuário ligado ao próprio destinatário, e a senha nunca em texto.
+        var usuarios = jdbc.sql("""
+                        SELECT u.login, d.marcacao_bot, u.senha_hash FROM usuario u
+                          JOIN destinatario d ON d.id = u.destinatario_id
+                        """)
+                .query((linha, numero) -> new String[] {
+                    linha.getString("login"), linha.getString("marcacao_bot"),
+                    linha.getString("senha_hash")})
+                .list();
+        assertThat(usuarios).extracting(usuario -> usuario[0] + " " + usuario[1])
+                .containsExactlyInAnyOrder("marco @mt", "ana @ana");
+        assertThat(usuarios).allSatisfy(usuario -> {
+            assertThat(usuario[2]).startsWith("{bcrypt}");
+            assertThat(codificadorDeSenha.matches(SENHA_INICIAL_DO_EXEMPLO, usuario[2])).isTrue();
+        });
     }
 
     @Test
@@ -130,12 +159,13 @@ class CargaCadastrosIniciaisTest extends TesteDeIntegracao {
                 .single();
     }
 
-    /** Total de linhas de destinatario, categoria e palavra_chave, nessa ordem. */
+    /** Total de linhas de destinatario, categoria, palavra_chave e usuario, nessa ordem. */
     private int[] contarTudo() {
         return new int[] {
             contar("SELECT COUNT(*) FROM destinatario"),
             contar("SELECT COUNT(*) FROM categoria"),
-            contar("SELECT COUNT(*) FROM palavra_chave")
+            contar("SELECT COUNT(*) FROM palavra_chave"),
+            contar("SELECT COUNT(*) FROM usuario")
         };
     }
 

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Trocar senha · Controle Financeiro</title>
+</head>
+<body>
+<main>
+    <h1>Trocar senha</h1>
+
+    <p th:if="${param.trocada}">Senha alterada.</p>
+    <p th:if="${erro}" th:text="${erro}" role="alert">Mensagem de erro</p>
+
+    <!-- Os campos nunca vêm preenchidos: senhas não voltam do servidor para o navegador. -->
+    <form th:action="@{/conta/senha}" method="post">
+        <p>
+            <label for="senhaAtual">Senha atual</label><br>
+            <input id="senhaAtual" name="senhaAtual" type="password"
+                   autocomplete="current-password" required>
+        </p>
+        <p>
+            <label for="novaSenha">Senha nova (pelo menos 8 caracteres)</label><br>
+            <input id="novaSenha" name="novaSenha" type="password" autocomplete="new-password"
+                   minlength="8" required>
+        </p>
+        <p>
+            <label for="confirmacao">Repita a senha nova</label><br>
+            <input id="confirmacao" name="confirmacao" type="password"
+                   autocomplete="new-password" minlength="8" required>
+        </p>
+        <button type="submit">Trocar senha</button>
+    </form>
+
+    <p><a th:href="@{/}">Voltar ao início</a></p>
+</main>
+</body>
+</html>

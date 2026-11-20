@@ -4,7 +4,8 @@
 # troque pelos dados reais. A aplicação lê o arquivo toda vez que sobe:
 #   - o que ainda não existe no banco é criado;
 #   - o que já existe não é duplicado nem alterado (destinatário pela marcação, categoria pelo
-#     nome e tipo, palavra-chave pelo texto). Mudanças feitas depois pela tela são preservadas.
+#     nome e tipo, palavra-chave pelo texto, usuário pelo login). Mudanças feitas depois pela
+#     tela são preservadas, inclusive a senha trocada pelo usuário.
 #
 # Comparações ignoram acentos e maiúsculas (collation utf8mb4_0900_ai_ci): "farmacia" e
 # "Farmácia" são a mesma palavra-chave, e uma palavra-chave pertence a uma única categoria.
@@ -18,6 +19,19 @@ destinatarios:
     marcacao-bot: "@ana"
   - nome: Casa
     marcacao-bot: "@casa"
+
+# Quem entra na interface web (RF06). "destinatario" é a marcação de um destinatário acima.
+# A senha inicial vira hash na carga (nunca é gravada em texto) e deve ser trocada no primeiro
+# acesso, em "Trocar senha". Use uma senha diferente para cada usuário no arquivo real.
+usuarios:
+  - nome: Marco
+    login: marco
+    senha-inicial: troque-esta-senha
+    destinatario: "@mt"
+  - nome: Ana
+    login: ana
+    senha-inicial: troque-esta-senha
+    destinatario: "@ana"
 
 # Categorias do ERS, Apêndice A. "tipo" é RECEITA ou DESPESA; "ativa" é opcional (padrão true).
 categorias:

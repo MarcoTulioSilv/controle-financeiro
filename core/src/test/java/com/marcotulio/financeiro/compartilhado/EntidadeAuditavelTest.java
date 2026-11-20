@@ -9,9 +9,13 @@ import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.JdbcClient;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.test.context.TestSecurityContextHolder;
+import org.springframework.security.test.context.support.WithMockUser;
 
 /** Colunas padrão de auditoria e concorrência otimista (convenção C7). */
 class EntidadeAuditavelTest extends TesteDeIntegracao {
@@ -33,10 +37,40 @@ class EntidadeAuditavelTest extends TesteDeIntegracao {
         // Assert
         assertThat(gravado.getCriadoEm()).isNotNull();
         assertThat(gravado.getAtualizadoEm()).isNotNull();
-        // Até a T08 (login) ninguém está autenticado: o autor é o próprio sistema.
+        // Sem ninguém logado (como na carga de dados iniciais), o autor é o próprio sistema.
         assertThat(gravado.getCriadoPor()).isEqualTo("sistema");
         assertThat(gravado.getAtualizadoPor()).isEqualTo("sistema");
         assertThat(gravado.getVersao()).isZero();
+    }
+
+    @Test
+    @WithMockUser(username = "ana")
+    void oAutorDaGravacaoEhOUsuarioLogado() {
+        // Act
+        RegistroDeExemplo gravado =
+                repositorio.saveAndFlush(new RegistroDeExemplo("da Ana", YearMonth.of(2026, 10)));
+
+        // Assert
+        assertThat(gravado.getCriadoPor()).isEqualTo("ana");
+        assertThat(gravado.getAtualizadoPor()).isEqualTo("ana");
+    }
+
+    @Test
+    @WithMockUser(username = "marco")
+    void quemEditaViraOAutorDaAtualizacaoSemApagarQuemCriou() {
+        // Arrange
+        RegistroDeExemplo gravado =
+                repositorio.saveAndFlush(new RegistroDeExemplo("do Marco", YearMonth.of(2026, 10)));
+        TestSecurityContextHolder.setAuthentication(
+                UsernamePasswordAuthenticationToken.authenticated("ana", null, List.of()));
+
+        // Act
+        gravado.setDescricao("editado pela Ana");
+        RegistroDeExemplo editado = repositorio.saveAndFlush(gravado);
+
+        // Assert
+        assertThat(editado.getCriadoPor()).isEqualTo("marco");
+        assertThat(editado.getAtualizadoPor()).isEqualTo("ana");
     }
 
     @Test
