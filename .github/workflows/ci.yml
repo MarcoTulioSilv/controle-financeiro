@@ -31,6 +31,24 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITLEAKS_ENABLE_COMMENTS: false
 
+  semgrep:
+    name: Análise estática (Semgrep)
+    runs-on: ubuntu-latest
+    # A imagem oficial, fixada pelo digest (sha256): a etiqueta 1.185.0 é só para leitura.
+    container:
+      image: semgrep/semgrep:1.185.0@sha256:67518c174185a2043fdbed16c70631b79209499b3671178e7194379b48295a0d
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      # --error reprova o job se houver qualquer achado; --metrics=off não envia telemetria.
+      - run: >-
+          semgrep scan --error --metrics=off
+          --config p/java
+          --config p/typescript
+          --config p/github-actions
+          --config p/docker-compose
+          --config p/security-audit
+          --config p/owasp-top-ten
+
   core:
     name: core (Java)
     runs-on: ubuntu-latest
@@ -44,6 +62,7 @@ jobs:
           distribution: temurin
           java-version: "25"
           cache: maven
+      # O verify roda os testes, a cobertura (JaCoCo, mínimo de 90%) e o SpotBugs + FindSecBugs.
       - run: ./mvnw --batch-mode verify
 
   gateway:
