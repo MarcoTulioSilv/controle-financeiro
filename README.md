@@ -87,3 +87,13 @@ cd core
 Os testes de integração sobem um MySQL 8.4 em container com o Testcontainers, então o
 **Docker Desktop precisa estar rodando**. Eles não usam o `.env` nem o banco do Compose: cada
 execução começa com um banco limpo, o que também permite rodá-los no pipeline.
+
+Além dos testes, o `verify` reprova o build se:
+- a cobertura (JaCoCo) ficar abaixo de 90% de linhas ou de desvios nos pacotes `cartao` e
+  `interpretador` e nas classes `Dinheiro*`/`Valor*`. Relatório em
+  `core/target/site/jacoco/index.html`;
+- o SpotBugs com FindSecBugs encontrar um alerta. Os alertas aparecem na saída do `verify`
+  (linhas `[ERROR] Low/Medium/High: ...`). Alerta aceito vai para `core/spotbugs-exclusoes.xml`, sempre
+  com a justificativa.
+
+No pipeline, o Semgrep analisa o repositório inteiro (Java, TypeScript, workflows e Compose).
