@@ -12,6 +12,7 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.env.YamlPropertySourceLoader;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
@@ -22,8 +23,12 @@ import org.springframework.stereotype.Component;
  * <p>O arquivo real tem dados do domicílio e por isso fica fora do Git; se ele não existir, nada
  * é carregado. A carga é idempotente: o que já está no banco não é duplicado nem alterado, então
  * rodar de novo é seguro e só acrescenta o que for novo no arquivo.
+ *
+ * <p>{@code @Order(1)}: roda antes das cargas que dependem do cadastro, como a dos cartões, que
+ * apontam para um usuário titular.
  */
 @Component
+@Order(1)
 class CargaCadastrosIniciais implements ApplicationRunner {
 
     private static final Logger LOG = LoggerFactory.getLogger(CargaCadastrosIniciais.class);

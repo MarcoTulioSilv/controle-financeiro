@@ -122,6 +122,19 @@ class ServicoUsuariosTest extends TesteDeIntegracao {
     }
 
     @Test
+    void encontraOIdDoUsuarioPeloLogin() {
+        // Arrange
+        servico.cadastrarSeAusente("Visitante", "visitante", SENHA_INICIAL, "@vis");
+        long idGravado = jdbc.sql("SELECT id FROM usuario WHERE login = 'visitante'")
+                .query(Long.class)
+                .single();
+
+        // Act e Assert
+        assertThat(servico.buscarIdPeloLogin("Visitante")).hasValue(idGravado);
+        assertThat(servico.buscarIdPeloLogin("ninguem")).isEmpty();
+    }
+
+    @Test
     void trocaASenhaQuandoASenhaAtualConfere() {
         // Arrange
         servico.cadastrarSeAusente("Visitante", "visitante", SENHA_INICIAL, "@vis");

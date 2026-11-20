@@ -50,6 +50,10 @@ class Usuario extends EntidadeAuditavel {
         this.destinatario = destinatario;
     }
 
+    Long getId() {
+        return id;
+    }
+
     String getSenhaHash() {
         return senhaHash;
     }
