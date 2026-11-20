@@ -95,18 +95,18 @@ com Hibernate Envers (RNF06, além das colunas da convenção C7).
 - Referências: ERS RF02, RF13, Apêndice A; `modelo-dados.md`, bloco A.
 
 ## T05 — Cartões, faturas e feriados
-- Status: [ ] a fazer
+- Status: [x] concluída
 - Tipo: feat · Branch: `feat/T05-cartoes-faturas`
 - Depende de: T02, T03, T08
 - Objetivo: persistir cartões e faturas, com o mês de referência calculado.
 - Critérios de aceitação:
-  - [ ] Migrações de `cartao`, `fatura` e `feriado`, fiéis ao `modelo-dados.md`, bloco B.
-  - [ ] Cartões carregados de `config/dados-iniciais.yml` (exemplo com Banco A/B/C e dias fictícios do Apêndice B).
-  - [ ] Feriados nacionais do ano corrente e do seguinte gravados a partir do `CalendarioBancario`, de forma idempotente; feriados locais vêm do arquivo de dados iniciais.
-  - [ ] Serviço público que, dado um cartão e uma data de compra, devolve a fatura (criando-a se não existir), com vencimento nominal e efetivo.
-  - [ ] Criação concorrente da mesma fatura: o `UNIQUE (cartao_id, mes_referencia)` vence, e o serviço reaproveita a fatura existente. Teste de integração que simula a corrida.
-  - [ ] No MVP 1, toda fatura nasce e permanece `ABERTA` (a revisão é do RF15, fora do escopo).
-  - [ ] Validação: o apelido do cartão não pode coincidir com palavra-chave nem com marcação de destinatário (regra na aplicação, com teste).
+  - [x] Migrações de `cartao`, `fatura` e `feriado`, fiéis ao `modelo-dados.md`, bloco B.
+  - [x] Cartões carregados de `config/dados-iniciais.yml` (exemplo com Banco A/B/C e dias fictícios do Apêndice B).
+  - [x] Feriados nacionais do ano corrente e do seguinte gravados a partir do `CalendarioBancario`, de forma idempotente; feriados locais vêm do arquivo de dados iniciais.
+  - [x] Serviço público que, dado um cartão e uma data de compra, devolve a fatura (criando-a se não existir), com vencimento nominal e efetivo.
+  - [x] Criação concorrente da mesma fatura: o `UNIQUE (cartao_id, mes_referencia)` vence, e o serviço reaproveita a fatura existente. Teste de integração que simula a corrida.
+  - [x] No MVP 1, toda fatura nasce e permanece `ABERTA` (a revisão é do RF15, fora do escopo).
+  - [x] Validação: o apelido do cartão não pode coincidir com palavra-chave nem com marcação de destinatário (regra na aplicação, com teste).
 - Referências: ERS RF14, RF16, RN03; `modelo-dados.md`, bloco B.
 
 ## T06 — Lançamentos
