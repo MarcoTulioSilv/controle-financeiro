@@ -4,8 +4,9 @@
 # troque pelos dados reais. A aplicação lê o arquivo toda vez que sobe:
 #   - o que ainda não existe no banco é criado;
 #   - o que já existe não é duplicado nem alterado (destinatário pela marcação, categoria pelo
-#     nome e tipo, palavra-chave pelo texto, usuário pelo login). Mudanças feitas depois pela
-#     tela são preservadas, inclusive a senha trocada pelo usuário.
+#     nome e tipo, palavra-chave pelo texto, usuário pelo login, cartão pelo apelido, feriado
+#     pela data). Mudanças feitas depois pela tela são preservadas, inclusive a senha trocada
+#     pelo usuário.
 #
 # Comparações ignoram acentos e maiúsculas (collation utf8mb4_0900_ai_ci): "farmacia" e
 # "Farmácia" são a mesma palavra-chave, e uma palavra-chave pertence a uma única categoria.
@@ -96,3 +97,50 @@ categorias:
   - nome: Empresa Anterior
     tipo: RECEITA
     ativa: false
+
+# Cartões de crédito do ERS, Apêndice B (RF14). "titular" é o login de um usuário acima.
+# O apelido é a palavra do cartão no bot: não pode coincidir com uma palavra-chave nem com a
+# marcação de um destinatário (com ou sem o @). "compra-no-fechamento" diz em que fatura entra
+# uma compra feita no próprio dia do fechamento: ATUAL ou PROXIMA. Um cartão já cadastrado
+# (mesmo apelido) não é alterado pela carga.
+cartoes:
+  - apelido: amt
+    nome: Banco A
+    titular: marco
+    dia-fechamento: 20
+    dia-vencimento: 25
+    compra-no-fechamento: PROXIMA
+  - apelido: aana
+    nome: Banco A
+    titular: ana
+    dia-fechamento: 10
+    dia-vencimento: 15
+    compra-no-fechamento: PROXIMA
+  - apelido: bmt
+    nome: Banco B
+    titular: marco
+    dia-fechamento: 5
+    dia-vencimento: 12
+    compra-no-fechamento: PROXIMA
+  - apelido: cmt
+    nome: Banco C
+    titular: marco
+    dia-fechamento: 15
+    dia-vencimento: 25
+    compra-no-fechamento: PROXIMA
+  - apelido: cana
+    nome: Banco C
+    titular: ana
+    dia-fechamento: 15
+    dia-vencimento: 25
+    compra-no-fechamento: PROXIMA
+
+# Feriados da cidade (RF16), usados no vencimento efetivo das faturas. Os feriados nacionais
+# não entram aqui: a aplicação os calcula e grava sozinha, para o ano corrente e o seguinte.
+# Cada linha é um dia (AAAA-MM-DD, entre aspas); feriado que se repete todo ano entra uma vez
+# por ano. Um dia que já é feriado não é gravado de novo.
+feriados-locais:
+  - data: "2026-07-15"
+    descricao: Aniversário da cidade (exemplo)
+  - data: "2027-07-15"
+    descricao: Aniversário da cidade (exemplo)
