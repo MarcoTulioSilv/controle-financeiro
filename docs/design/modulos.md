@@ -34,6 +34,7 @@ flowchart TD
     bot --> interpretador & lancamento & aprovacao & cadastro
     aprovacao --> lancamento & cadastro
     lancamento --> cartao & cadastro
+    cartao --> cadastro
     relatorio --> lancamento & planejamento & patrimonio
     interpretador --> compartilhado
 ```
@@ -51,6 +52,8 @@ Todos os módulos podem depender de `compartilhado`; `seguranca` é transversal 
 | M5 | Acesso entre módulos apenas por serviços públicos | Ninguém grava dados de outro módulo contornando suas regras (ex.: a máquina de estados da fatura) |
 
 Sobre o caso `aprovacao` → `lancamento`: a solicitação de exclusão é feita pelas cascas (`web`, `bot`) ao módulo `aprovacao`, que, na aprovação, executa a exclusão por meio do serviço de `lancamento`. O `lancamento` não conhece o `aprovacao`, evitando ciclo.
+
+Sobre o caso `cartao` → `cadastro`: o titular do cartão é um usuário, e o apelido do cartão não pode coincidir com uma palavra-chave nem com a marcação de um destinatário. O `cartao` consulta isso pelos serviços públicos do `cadastro` (M5) e guarda o titular apenas pelo id. O `cadastro` não conhece o `cartao`, evitando ciclo (M1).
 
 ## 5. Verificação automática: ArchUnit
 
