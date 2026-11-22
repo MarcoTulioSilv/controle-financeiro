@@ -3,8 +3,8 @@
 
 | Campo | Valor |
 |---|---|
-| Versão | 1.3 |
-| Data | 13/11/2026 |
+| Versão | 1.4 |
+| Data | 22/11/2026 |
 | Autor | Marco Túlio Silva Oliveira |
 | Referências de processo | SWEBOK 4.0 (KA Software Requirements); estrutura inspirada na ISO/IEC/IEEE 29148 |
 | Status | Validado — linha de base dos requisitos. Alterações seguem o controle de mudanças (seção 12) |
@@ -232,7 +232,13 @@ Prioridade (MoSCoW): **M** = Must (essencial), **S** = Should (importante), **C*
 - A categoria **Compras** é reservada para compras à vista.
 - Uma dívida mantém o saldo devedor atualizado a cada parcela paga.
 - Uma dívida pode ser vinculada a um bem (RF05).
-**Origem:** Análise da planilha (categoria "Débito").
+- **Adiantamento:** o usuário informa o **valor pago** e o **valor abatido** da dívida (ex.: paga R$ 450,00 e abate R$ 500,00, com R$ 50,00 de desconto).
+  - O valor pago vira um lançamento na categoria **Dívidas**, com o "para quem" da dívida; o mês de referência segue o RF01 (com cartão, a fatura do RF14).
+  - O valor abatido elimina as **últimas** parcelas. Se não fechar parcelas inteiras, o restante reduz a parcela imediatamente anterior a elas. O saldo devedor cai exatamente o valor abatido.
+  - O valor abatido não pode passar do saldo devedor, e o valor pago não pode passar do valor abatido.
+- **Quitação antecipada:** é o adiantamento cujo valor abatido é igual ao saldo devedor; a dívida passa a quitada.
+- Pelo bot, o adiantamento cria só o lançamento do pagamento; o abatimento fica **pendente** e só é aplicado depois de confirmado na plataforma web (RN05).
+**Origem:** Análise da planilha (categoria "Débito"); adiantamento e quitação: controle de mudanças (v1.4).
 
 ### RF13 — Campo "para quem" (M)
 **Descrição:** Todo lançamento indica a quem se destina: um membro do domicílio ou a casa.
@@ -311,6 +317,7 @@ Prioridade (MoSCoW): **M** = Must (essencial), **S** = Should (importante), **C*
 | Mês de referência manual | `mercado prox-mes 250` ou `mercado outubro 250` | Referência informada prevalece |
 | Data + referência | `gás 27/09 outubro 130` | Compra em 27/09, referência out |
 | Parcelado | `celular 16x 106,18 bmt` | 16 parcelas na categoria Dívidas, a partir da fatura calculada |
+| Adiantamento de dívida | `450 moto abater 500` ou `450 moto abater 500 bmt` | Pagamento de R$ 450,00 em Dívidas; abatimento de R$ 500,00 pendente de confirmação na plataforma (RF12) |
 | Ajuda | `ajuda` | Lista os formatos |
 | Desfazer | `desfazer` | Com rascunho aberto: descarta o rascunho. Sem rascunho: o último lançamento do remetente fica com exclusão pendente |
 
@@ -322,6 +329,7 @@ Prioridade (MoSCoW): **M** = Must (essencial), **S** = Should (importante), **C*
 5. A categoria é deduzida pelas palavras-chave (RF02).
 6. A marcação de parcelamento (`Nx`) define a categoria como **Dívidas**, prevalecendo sobre as palavras-chave (RF12).
 7. "Para quem" é obrigatório (RF13). Os exemplos da tabela 4.1 sem `@` disparam a pergunta de complemento (4.4).
+8. No adiantamento, o número logo após `abater` é o valor abatido e o outro número é o valor pago. As demais palavras identificam a dívida ativa pela descrição; o "para quem" vem da dívida. Se nenhuma ou mais de uma dívida ativa corresponder, o bot pergunta qual, listando as dívidas ativas só pela descrição, sem saldos (RNF12), como na seção 4.4.
 
 ### 4.3 Respostas do bot
 
@@ -329,6 +337,7 @@ Prioridade (MoSCoW): **M** = Must (essencial), **S** = Should (importante), **C*
 ✅ Despesa · Alimentação · R$ 250,00 · @casa · compra 21/09 · adc out/26
 ✅ Despesa · Alimentação · R$ 250,00 · @casa · compra 25/09 · adc nov/26 · ⚠️ revisar
 📋 Fatura Banco B fecha hoje — 3 compras para revisar na plataforma
+✅ Adiantamento · Dívidas · R$ 450,00 · moto · abate R$ 500,00 · adc nov/26 · confirmar na plataforma
 ```
 
 As respostas não exibem saldos, totais ou orçamentos (RNF12). O rótulo `adc` é usado **somente** nas respostas do bot; nos demais artefatos o termo é "mês de referência".
@@ -475,6 +484,7 @@ Auditoria        → entidade, ação, usuário, data, detalhes
 | RF07, RF07.1, RN05 | ADR-001, ADR-002 | gateway (canal) + core/interpretador | A definir |
 | RF10, RN07 | ADR-006 | Lançamentos / Auditoria | A definir |
 | RF14, RN03 | — | Cartões e faturas | Casos de valor limite (seção 3, RF14) |
+| RF12 (parcelas, adiantamento e quitação) | ADR-005 | Dívidas | A definir |
 | RNF01 | ADR-003 | Infraestrutura | A definir |
 | RF17, RF18 | ADR-005 | Patrimônio / Reserva | A definir |
 | RNF05 | ADR-005 | Núcleo (valores) | A definir |
@@ -560,3 +570,4 @@ Observações:
 | 1.1 | 04/10/2026 | Controle de mudanças (issue "tratamento de aportes em ativos e destino do resultado mensal"): novos RF17 (compra e venda de ativos) e RF18 (reserva calculada, podendo ser negativa); ajustes em RF04 (fórmula da economia), RF05 (patrimônio inclui a reserva), RF09 (saldo inicial = reserva), modelo conceitual e Apêndice A (categoria Investimentos) |
 | 1.2 | 05/10/2026 | Controle de mudanças (máquinas de estado): `desfazer` descarta o rascunho aberto (4.1, 4.4); solicitante pode cancelar solicitação pendente (RF10) |
 | 1.3 | 13/11/2026 | Controle de mudanças (prioridade para substituir a planilha): relatórios do RF09 no Power BI Desktop sobre visões SQL, com usuário somente leitura (ADR-007); hospedagem em nuvem avaliada e descartada |
+| 1.4 | 22/11/2026 | Controle de mudanças (issue #30, adiantamento e quitação de dívidas): RF12 passa a prever o adiantamento por valor pago e valor abatido, com a quitação antecipada como caso particular; pelo bot, o abatimento fica pendente de confirmação na web (RN05); novo formato `abater` (4.1, 4.2 regra 8, 4.3); rastreabilidade do RF12 |

@@ -2,8 +2,8 @@
 
 | Campo | Valor |
 |---|---|
-| Base | ERS v1.2, `modelo-dados.md` |
-| Situação | **Completo** — fatura, dívida, rascunho e solicitação de aprovação aprovadas |
+| Base | ERS v1.4, `modelo-dados.md` |
+| Situação | **Completo** — fatura, dívida, rascunho, solicitação de aprovação e adiantamento de dívida |
 
 Uma máquina de estados define, para uma entidade com ciclo de vida: os **estados** possíveis, as **transições** permitidas, os **eventos** que as disparam, as **guardas** (condições) e os **efeitos**. Toda transição que não está no diagrama é **proibida**: o código deve lançar uma exceção em vez de gravar um estado inconsistente.
 
@@ -47,18 +47,22 @@ Compra recebida pelo bot para uma fatura CONFERIDA ou PAGA: nada é gravado; o b
 ```mermaid
 stateDiagram-v2
     [*] --> ATIVA: compra parcelada ou financiamento registrado
+    ATIVA --> ATIVA: adiantamento aplicado, sobra saldo (usuário)
     ATIVA --> QUITADA: mês da última parcela chegou (sistema)
-    ATIVA --> QUITADA: quitação antecipada (usuário)
+    ATIVA --> QUITADA: adiantamento aplicado zera o saldo (usuário)
     QUITADA --> [*]
 ```
 
 | Transição | Evento | Guarda | Efeito |
 |---|---|---|---|
 | — → ATIVA | Registro da dívida (web ou bot com `Nx`) | — | Parcelas geradas como lançamentos nos meses correspondentes |
+| ATIVA → ATIVA | Adiantamento aplicado (seção 5) | Valor abatido < saldo devedor | Abatimento das últimas parcelas (seção 5) |
 | ATIVA → QUITADA (normal) | Agendador (origem SISTEMA) | Mês atual ≥ mês de referência da última parcela | `data_quitacao` preenchida |
-| ATIVA → QUITADA (antecipada) | Usuário registra a quitação, com valor e data | — | 1. Lançamento de quitação (categoria Dívidas, mês atual), referenciado em `lancamento_quitacao_id`; 2. exclusão lógica das parcelas com mês de referência futuro; 3. `data_quitacao` preenchida |
+| ATIVA → QUITADA (antecipada) | Adiantamento aplicado (seção 5) | Valor abatido = saldo devedor | Abatimento de todas as parcelas abatíveis; `data_quitacao` preenchida |
 
-**Quitação antecipada sem validação cruzada.** A exclusão protegida pela RN07 serve para corrigir erros; a quitação é um acontecimento real que torna as parcelas futuras desnecessárias. O pagamento de quitação fica visível como lançamento, e o Envers registra o autor e as parcelas canceladas. Os três efeitos ocorrem numa única transação: ou todos são gravados, ou nenhum.
+**Saldo devedor**, para o adiantamento: soma das parcelas não excluídas cujo mês de referência é **posterior** ao mês de referência do pagamento do adiantamento. A parcela do próprio mês é paga normalmente e não entra no abatimento.
+
+**Quitação antecipada é um adiantamento.** Antes da v1.4 do ERS ela tinha um lançamento próprio (`lancamento_quitacao_id`); agora é o adiantamento cujo valor abatido zera o saldo, e o mesmo código atende os dois casos.
 
 ---
 
@@ -119,9 +123,39 @@ stateDiagram-v2
 
 ---
 
+## 5. Adiantamento de dívida (RF12)
+
+```mermaid
+stateDiagram-v2
+    [*] --> APLICADO: registrado na web
+    [*] --> PENDENTE: registrado pelo bot
+    PENDENTE --> APLICADO: usuário confirma na web
+    PENDENTE --> DESCARTADO: usuário descarta na web
+    APLICADO --> [*]
+    DESCARTADO --> [*]
+```
+
+| Transição | Evento | Guarda | Efeito |
+|---|---|---|---|
+| — → APLICADO | Registro na web, com valor pago e valor abatido | Dívida ATIVA; valor abatido ≤ saldo devedor; valor pago ≤ valor abatido; nenhuma parcela afetada em fatura CONFERIDA ou PAGA (RN06) | Lançamento do pagamento e abatimento, na mesma transação |
+| — → PENDENTE | Mensagem `abater` no bot (ERS 4.2, regra 8) | Dívida ATIVA; valor pago ≤ valor abatido | Só o lançamento do pagamento; aviso na tela inicial |
+| PENDENTE → APLICADO | Usuário confirma na web | As guardas do registro na web, **verificadas novamente** | Abatimento, na mesma transação |
+| PENDENTE → DESCARTADO | Usuário descarta na web | — | Nenhum abatimento. O lançamento do pagamento continua (o dinheiro saiu); se estiver errado, a correção segue o RF10 |
+
+**Abatimento:** percorre as parcelas abatíveis da última para a primeira. Cada parcela que cabe inteira no valor restante sofre exclusão lógica (`excluido_em`); o que sobrar reduz o valor da parcela seguinte nesse percurso. O saldo devedor cai exatamente o valor abatido. Exemplo: parcelas de R$ 106,18 e abatimento de R$ 500,00 → quatro parcelas excluídas (R$ 424,72) e a quinta, de trás para a frente, reduzida em R$ 75,28.
+
+**Por que o bot não aplica o abatimento (RN05):** o abatimento exclui e altera parcelas, e o bot não exclui nem altera registros. O bot registra só o fato novo (o pagamento) e deixa o efeito sobre registros existentes para a web, onde o usuário está autenticado e vê as parcelas afetadas.
+
+**Sem validação cruzada:** como na quitação, o adiantamento é um acontecimento real, não a correção de um erro; a RN07 não se aplica. O Envers registra o autor e as parcelas afetadas.
+
+**Guardas verificadas duas vezes:** entre o bot e a confirmação, outra parcela pode ter vencido ou uma fatura pode ter sido conferida, mudando o saldo devedor. A confirmação recalcula tudo antes de aplicar.
+
+---
+
 ## Histórico
 
 | Data | Alteração |
 |---|---|
 | 05/10/2026 | Máquinas da fatura e da dívida aprovadas (quitação antecipada sem validação cruzada) |
 | 05/10/2026 | Máquinas do rascunho (com DESCARTADO) e da solicitação de aprovação (com CANCELADA) aprovadas; ERS v1.2 |
+| 22/11/2026 | ERS v1.4 (issue #30): nova máquina do adiantamento de dívida (seção 5); a quitação antecipada passa a ser um adiantamento que zera o saldo |
