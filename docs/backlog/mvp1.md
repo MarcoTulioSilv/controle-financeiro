@@ -110,16 +110,16 @@ com Hibernate Envers (RNF06, além das colunas da convenção C7).
 - Referências: ERS RF14, RF16, RN03; `modelo-dados.md`, bloco B.
 
 ## T06 — Lançamentos
-- Status: [ ] a fazer
+- Status: [x] concluída
 - Tipo: feat · Branch: `feat/T06-lancamentos`
 - Depende de: T05
 - Objetivo: registrar e editar receitas e despesas.
 - Critérios de aceitação:
-  - [ ] Migração de `lancamento` (blocos A e B, exceto as colunas de dívida e recorrência), com índices e `CHECK`s do modelo.
-  - [ ] Serviço de registro: valor `BigDecimal` > 0, categoria coerente com o tipo, "para quem" obrigatório (RF13), origem `WEB` ou `IMPORTACAO`.
-  - [ ] Mês de referência: sem cartão, o mês da compra; com cartão, o da fatura (T05); informado manualmente, prevalece. Nunca anterior ao mês da compra (RN02).
-  - [ ] Edição permitida; nenhuma exclusão no MVP 1.
-  - [ ] Testes unitários das regras e de integração da gravação.
+  - [x] Migração de `lancamento` (blocos A e B, exceto as colunas de dívida e recorrência), com índices e `CHECK`s do modelo.
+  - [x] Serviço de registro: valor `BigDecimal` > 0, categoria coerente com o tipo, "para quem" obrigatório (RF13), origem `WEB` ou `IMPORTACAO`.
+  - [x] Mês de referência: sem cartão, o mês da compra; com cartão, o da fatura (T05); informado manualmente, prevalece. Nunca anterior ao mês da compra (RN02).
+  - [x] Edição permitida; nenhuma exclusão no MVP 1.
+  - [x] Testes unitários das regras e de integração da gravação.
 - Referências: ERS RF01, RF13, RN02; `modelo-dados.md`, blocos A e B.
 
 ## T07 — Dívidas e parcelamento
