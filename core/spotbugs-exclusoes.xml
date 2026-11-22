@@ -26,6 +26,13 @@
     <Bug pattern="CRLF_INJECTION_LOGS"/>
   </Match>
 
+  <!-- CRLF_INJECTION_LOGS: mesma situação da CargaCadastrosIniciais, acima (mesmo arquivo). -->
+  <Match>
+    <Class name="com.marcotulio.financeiro.cartao.CargaCartoesIniciais"/>
+    <Method name="carregar"/>
+    <Bug pattern="CRLF_INJECTION_LOGS"/>
+  </Match>
+
   <!--
     THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION: HttpSecurity.build(), do Spring Security,
     declara "throws Exception"; o método do bean só repassa o que a API impõe.
