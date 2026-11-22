@@ -1,5 +1,6 @@
 package com.marcotulio.financeiro.cadastro;
 
+import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,5 +34,11 @@ public class ServicoDestinatarios {
     @Transactional(readOnly = true)
     public boolean existeMarcacao(String marcacaoBot) {
         return repositorio.findByMarcacaoBot(marcacaoBot).isPresent();
+    }
+
+    /** O destinatário com o id informado. Usado pelo lançamento para conferir o "para quem". */
+    @Transactional(readOnly = true)
+    public Optional<DestinatarioCadastrado> buscarPorId(long destinatarioId) {
+        return repositorio.findById(destinatarioId).map(Destinatario::paraConsulta);
     }
 }

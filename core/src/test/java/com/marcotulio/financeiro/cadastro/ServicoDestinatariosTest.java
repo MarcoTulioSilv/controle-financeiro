@@ -65,6 +65,24 @@ class ServicoDestinatariosTest extends TesteDeIntegracao {
         assertThat(servico.existeMarcacao("@outro")).isFalse();
     }
 
+    @Test
+    void buscaODestinatarioPeloId() {
+        // Arrange
+        DestinatarioCadastrado visitante = servico.cadastrarSeAusente("Visitante", "@vis");
+
+        // Act
+        var encontrado = servico.buscarPorId(visitante.id());
+
+        // Assert
+        assertThat(encontrado).contains(visitante);
+    }
+
+    @Test
+    void buscarDestinatarioInexistenteNaoEncontraNada() {
+        // Act e Assert
+        assertThat(servico.buscarPorId(-1L)).isEmpty();
+    }
+
     private int contarComMarcacao(String marcacaoBot) {
         return jdbc.sql("SELECT COUNT(*) FROM destinatario WHERE marcacao_bot = ?")
                 .param(marcacaoBot)
