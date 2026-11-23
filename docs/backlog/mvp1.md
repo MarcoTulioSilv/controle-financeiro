@@ -124,15 +124,15 @@ com Hibernate Envers (RNF06, além das colunas da convenção C7).
 - Referências: ERS RF01, RF13, RN02; `modelo-dados.md`, blocos A e B.
 
 ## T07 — Dívidas e parcelamento
-- Status: [ ] a fazer
+- Status: [x] concluída
 - Tipo: feat · Branch: `feat/T07-dividas-parcelamento`
 - Depende de: T06
 - Objetivo: compras parceladas e financiamentos (RF12).
 - Critérios de aceitação:
-  - [ ] Migração de `divida` e das colunas `divida_id` e `numero_parcela` em `lancamento`, com os `CHECK`s e o `UNIQUE (divida_id, numero_parcela)` do modelo.
-  - [ ] Parcelamento informado pelo valor da parcela: total = parcela × quantidade. Informado pelo total: divisão com `HALF_EVEN` e a diferença na primeira parcela (ADR-005). Teste: a soma das parcelas é **exatamente** o total.
-  - [ ] Todas as parcelas na categoria Dívidas; a primeira na fatura calculada, as demais nos meses seguintes.
-  - [ ] Saldo devedor calculado, nunca gravado.
+  - [x] Migração de `divida` e das colunas `divida_id` e `numero_parcela` em `lancamento`, com os `CHECK`s e o `UNIQUE (divida_id, numero_parcela)` do modelo.
+  - [x] Parcelamento informado pelo valor da parcela: total = parcela × quantidade. Informado pelo total: divisão com `HALF_EVEN` e a diferença na primeira parcela (ADR-005). Teste: a soma das parcelas é **exatamente** o total.
+  - [x] Todas as parcelas na categoria Dívidas; a primeira na fatura calculada, as demais nos meses seguintes.
+  - [x] Saldo devedor calculado, nunca gravado.
 - Referências: ERS RF12; ADR-005; `modelo-dados.md`, bloco B; `maquinas-estado.md`, seção 2 (só o estado ATIVA no MVP 1).
 
 ## T08 — Login e segurança web

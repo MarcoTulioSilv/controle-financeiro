@@ -1,6 +1,7 @@
 package com.marcotulio.financeiro.cartao;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.Optional;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -37,10 +38,29 @@ public class ServicoFaturas {
      */
     @Transactional
     public FaturaRegistrada faturaDaCompra(long cartaoId, LocalDate dataCompra) {
-        Cartao cartao = cartoes.findById(cartaoId)
-                .orElseThrow(() -> new IllegalArgumentException("Cartão não encontrado: " + cartaoId));
-        FaturaCalculada calculada = calculadora.calcular(cartao.regra(), dataCompra);
+        Cartao cartao = buscarCartao(cartaoId);
+        return buscarOuCriar(cartaoId, calculadora.calcular(cartao.regra(), dataCompra));
+    }
 
+    /**
+     * A fatura do cartão no {@code mesReferencia}, criada (aberta) se ainda não existir. Serve às
+     * parcelas 2, 3... de uma compra parcelada, que entram nas faturas dos meses seguintes ao da
+     * primeira (RF12).
+     *
+     * @throws IllegalArgumentException se o cartão não existir
+     */
+    @Transactional
+    public FaturaRegistrada faturaDoMes(long cartaoId, YearMonth mesReferencia) {
+        Cartao cartao = buscarCartao(cartaoId);
+        return buscarOuCriar(cartaoId, calculadora.calcularPeloMes(cartao.regra(), mesReferencia));
+    }
+
+    private Cartao buscarCartao(long cartaoId) {
+        return cartoes.findById(cartaoId)
+                .orElseThrow(() -> new IllegalArgumentException("Cartão não encontrado: " + cartaoId));
+    }
+
+    private FaturaRegistrada buscarOuCriar(long cartaoId, FaturaCalculada calculada) {
         Optional<Fatura> existente = faturas.findByCartaoIdAndMesReferencia(cartaoId, calculada.mesReferencia());
         if (existente.isPresent()) {
             return existente.get().paraConsulta();

@@ -55,13 +55,21 @@ public class ServicoLancamentos {
      * Troca os dados de um lançamento, conferidos de novo como num registro: o mês de referência
      * e a fatura são recalculados. A origem continua a do registro.
      *
-     * @throws IllegalArgumentException se o lançamento não existir ou algum dado for inválido
+     * <p>Uma parcela de dívida não é editada aqui: o recálculo pela data da compra a levaria para
+     * o mês da primeira parcela, e a edição poderia tirá-la da categoria Dívidas (RF12).
+     *
+     * @throws IllegalArgumentException se o lançamento não existir, for uma parcela de dívida ou
+     *     algum dado for inválido
      */
     @Transactional
     public LancamentoRegistrado editar(long lancamentoId, DadosDoLancamento dados) {
         Lancamento lancamento = lancamentos.findById(lancamentoId)
                 .orElseThrow(() -> new IllegalArgumentException(
                         "Lançamento não encontrado: " + lancamentoId + "."));
+        if (lancamento.ehParcela()) {
+            throw new IllegalArgumentException("Este lançamento é a parcela " + lancamento.numeroParcela()
+                    + " da dívida " + lancamento.dividaId() + " e não pode ser editado como um lançamento avulso.");
+        }
         lancamento.alterar(conferir(dados));
         return lancamento.paraConsulta();
     }

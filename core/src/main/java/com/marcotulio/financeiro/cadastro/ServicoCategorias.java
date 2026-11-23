@@ -46,6 +46,15 @@ public class ServicoCategorias {
         return categorias.findById(categoriaId).map(Categoria::paraConsulta);
     }
 
+    /**
+     * A categoria com o nome e o tipo informados, ignorando acentos e maiúsculas (collation C3).
+     * Usado pelas dívidas: toda parcela vai para a categoria Dívidas (RF12).
+     */
+    @Transactional(readOnly = true)
+    public Optional<CategoriaCadastrada> buscarPorNomeETipo(String nome, TipoCategoria tipo) {
+        return categorias.findByNomeAndTipo(nome, tipo).map(Categoria::paraConsulta);
+    }
+
     /** Categorias nunca são excluídas: são desativadas e continuam nos lançamentos antigos. */
     @Transactional
     public void desativar(long categoriaId) {

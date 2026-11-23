@@ -12,12 +12,15 @@ import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.YearMonth;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 /**
  * Uma receita ou uma despesa (RF01).
  *
  * <p>Categoria, destinatário, cartão e fatura pertencem a outros módulos e são guardados só pelo
- * id (M5). A entidade só aceita dados já conferidos ({@link LancamentoConferido}): não há como
+ * id (M5). Uma parcela de dívida (RF12) é um lançamento como os outros, com a dívida e o número
+ * da parcela preenchidos. A entidade só aceita dados já conferidos ({@link LancamentoConferido}): não há como
  * gravar um lançamento que pulou as {@link RegrasDoLancamento}.
  *
  * <p>Colunas da tabela que ficam de fora do mapeamento, porque só são usadas depois do MVP 1:
@@ -68,6 +71,15 @@ class Lancamento extends EntidadeAuditavel {
     @Column(name = "fatura_id")
     private Long faturaId;
 
+    /** A dívida de que este lançamento é parcela; {@code null} num lançamento avulso. */
+    @Column(name = "divida_id", updatable = false)
+    private Long dividaId;
+
+    // SMALLINT na tabela: ver o comentário sobre o @JdbcTypeCode na Divida.
+    @JdbcTypeCode(SqlTypes.SMALLINT)
+    @Column(name = "numero_parcela", updatable = false)
+    private Integer numeroParcela;
+
     protected Lancamento() {
         // exigido pelo JPA
     }
@@ -75,6 +87,25 @@ class Lancamento extends EntidadeAuditavel {
     Lancamento(LancamentoConferido conferido, OrigemLancamento origem) {
         this.origem = origem;
         alterar(conferido);
+    }
+
+    /** A parcela {@code numeroParcela} da dívida {@code dividaId} (RF12). */
+    Lancamento(LancamentoConferido conferido, OrigemLancamento origem, long dividaId, int numeroParcela) {
+        this(conferido, origem);
+        this.dividaId = dividaId;
+        this.numeroParcela = numeroParcela;
+    }
+
+    boolean ehParcela() {
+        return dividaId != null;
+    }
+
+    Integer numeroParcela() {
+        return numeroParcela;
+    }
+
+    Long dividaId() {
+        return dividaId;
     }
 
     /** A edição troca todos os dados informados, já conferidos de novo. */
@@ -92,6 +123,6 @@ class Lancamento extends EntidadeAuditavel {
 
     LancamentoRegistrado paraConsulta() {
         return new LancamentoRegistrado(id, tipo, valor, descricao, categoriaId, destinatarioId,
-                dataCompra, mesReferencia, cartaoId, faturaId, origem);
+                dataCompra, mesReferencia, cartaoId, faturaId, origem, dividaId, numeroParcela);
     }
 }
