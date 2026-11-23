@@ -11,6 +11,8 @@ import java.time.YearMonth;
  * @param destinatarioId o "para quem" (RF13)
  * @param cartaoId {@code null} quando a compra não foi no cartão
  * @param faturaId {@code null} sem cartão, ou quando o mês informado difere do mês da fatura
+ * @param dividaId a dívida de que o lançamento é parcela (RF12); {@code null} num lançamento avulso
+ * @param numeroParcela o número da parcela na dívida; {@code null} num lançamento avulso
  */
 public record LancamentoRegistrado(
         long id,
@@ -23,5 +25,7 @@ public record LancamentoRegistrado(
         YearMonth mesReferencia,
         Long cartaoId,
         Long faturaId,
-        OrigemLancamento origem) {
+        OrigemLancamento origem,
+        Long dividaId,
+        Integer numeroParcela) {
 }
