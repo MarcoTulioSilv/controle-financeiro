@@ -135,6 +135,25 @@ class ServicoCategoriasTest extends TesteDeIntegracao {
     }
 
     @Test
+    void buscaACategoriaPeloIdMesmoInativa() {
+        // Arrange: lançamentos antigos continuam com a categoria desativada (RF02).
+        CategoriaCadastrada categoria =
+                servico.cadastrarSeAusente("Emprego antigo de teste", TipoCategoria.RECEITA, false);
+
+        // Act
+        var encontrada = servico.buscarPorId(categoria.id());
+
+        // Assert
+        assertThat(encontrada).contains(categoria);
+    }
+
+    @Test
+    void buscarCategoriaInexistenteNaoEncontraNada() {
+        // Act e Assert
+        assertThat(servico.buscarPorId(-1L)).isEmpty();
+    }
+
+    @Test
     void oRepositorioDeCategoriasNaoOfereceExclusao() {
         // Arrange: RF02, categorias são desativadas, nunca excluídas.
         // Act

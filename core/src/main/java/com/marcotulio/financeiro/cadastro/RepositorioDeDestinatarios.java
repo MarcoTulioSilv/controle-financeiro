@@ -13,6 +13,8 @@ interface RepositorioDeDestinatarios extends Repository<Destinatario, Long> {
 
     Destinatario save(Destinatario destinatario);
 
+    Optional<Destinatario> findById(Long id);
+
     /** A comparação segue a collation da coluna: {@code @MT} encontra {@code @mt}. */
     Optional<Destinatario> findByMarcacaoBot(String marcacaoBot);
 }

@@ -1,6 +1,7 @@
 package com.marcotulio.financeiro.cadastro;
 
 import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,6 +35,15 @@ public class ServicoCategorias {
         return categorias.findByTipoAndAtivaTrueOrderByNome(tipo).stream()
                 .map(Categoria::paraConsulta)
                 .toList();
+    }
+
+    /**
+     * A categoria com o id informado, ativa ou não. Usado pelo lançamento para conferir se a
+     * categoria é do mesmo tipo (receita ou despesa) que ele.
+     */
+    @Transactional(readOnly = true)
+    public Optional<CategoriaCadastrada> buscarPorId(long categoriaId) {
+        return categorias.findById(categoriaId).map(Categoria::paraConsulta);
     }
 
     /** Categorias nunca são excluídas: são desativadas e continuam nos lançamentos antigos. */
