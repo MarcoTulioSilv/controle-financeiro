@@ -154,6 +154,21 @@ class ServicoCategoriasTest extends TesteDeIntegracao {
     }
 
     @Test
+    void buscaACategoriaPeloNomeETipoSemDiferenciarAcentosNemMaiusculas() {
+        // Arrange: as parcelas de dívidas procuram a categoria Dívidas pelo nome (RF12).
+        CategoriaCadastrada dividas =
+                servico.cadastrarSeAusente("Dívidas de teste", TipoCategoria.DESPESA, true);
+
+        // Act
+        var encontrada = servico.buscarPorNomeETipo("DIVIDAS DE TESTE", TipoCategoria.DESPESA);
+        var deOutroTipo = servico.buscarPorNomeETipo("Dívidas de teste", TipoCategoria.RECEITA);
+
+        // Assert
+        assertThat(encontrada).contains(dividas);
+        assertThat(deOutroTipo).isEmpty();
+    }
+
+    @Test
     void oRepositorioDeCategoriasNaoOfereceExclusao() {
         // Arrange: RF02, categorias são desativadas, nunca excluídas.
         // Act
