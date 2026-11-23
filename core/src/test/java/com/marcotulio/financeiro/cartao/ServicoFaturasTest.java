@@ -180,6 +180,43 @@ class ServicoFaturasTest extends TesteDeIntegracao {
                 .hasMessageContaining("-1");
     }
 
+    // ----- fatura de um mês de referência (parcelas, RF12) -----
+
+    @Test
+    void criaAFaturaDeUmMesDeReferenciaComVencimentoNominalEEfetivo() {
+        // Act: cartão que fecha no dia 20 e vence no dia 25; 25/10/2026 é domingo.
+        FaturaRegistrada fatura = servico.faturaDoMes(amt, YearMonth.of(2026, 10));
+
+        // Assert
+        assertThat(fatura.cartaoId()).isEqualTo(amt);
+        assertThat(fatura.mesReferencia()).isEqualTo(YearMonth.of(2026, 10));
+        assertThat(fatura.dataFechamento()).isEqualTo(LocalDate.of(2026, 10, 20));
+        assertThat(fatura.dataVencimento()).isEqualTo(LocalDate.of(2026, 10, 25));
+        assertThat(fatura.dataVencimentoEfetiva()).isEqualTo(LocalDate.of(2026, 10, 26));
+        assertThat(fatura.status()).isEqualTo(StatusFatura.ABERTA);
+    }
+
+    @Test
+    void faturaDoMesReaproveitaAFaturaCriadaPorUmaCompraDaqueleCiclo() {
+        // Arrange
+        FaturaRegistrada daCompra = servico.faturaDaCompra(amt, LocalDate.of(2026, 10, 10));
+
+        // Act
+        FaturaRegistrada doMes = servico.faturaDoMes(amt, YearMonth.of(2026, 10));
+
+        // Assert
+        assertThat(doMes).isEqualTo(daCompra);
+        assertThat(contarFaturasDoCartao(amt)).isEqualTo(1);
+    }
+
+    @Test
+    void faturaDoMesDeCartaoInexistenteFalha() {
+        // Act e Assert
+        assertThatThrownBy(() -> servico.faturaDoMes(-1L, YearMonth.of(2026, 10)))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("-1");
+    }
+
     /**
      * A corrida: duas compras simultâneas no mesmo cartão e ciclo. As duas procuram a fatura, não
      * a encontram, e as duas tentam criá-la. O teste força essa ordem dos acontecimentos:
