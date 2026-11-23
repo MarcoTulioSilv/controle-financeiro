@@ -144,3 +144,28 @@ feriados-locais:
     descricao: Aniversário da cidade (exemplo)
   - data: "2027-07-15"
     descricao: Aniversário da cidade (exemplo)
+
+# Orçamento (RF04): o valor planejado de uma categoria a partir de um mês ("vigente-desde",
+# AAAA-MM, entre aspas). A categoria é identificada pelo nome e pelo tipo, como acima, e precisa
+# existir. Para mudar o orçamento, acrescente uma linha com outro "vigente-desde": os meses
+# anteriores mantêm o valor antigo. Valores com ponto e entre aspas ("1200.00"); zero deixa de
+# planejar a categoria. Um orçamento já gravado (mesma categoria e mesmo mês) não é alterado.
+orcamentos:
+  - categoria: Alimentação
+    tipo: DESPESA
+    vigente-desde: "2026-01"
+    valor-planejado: "1200.00"
+  - categoria: Lazer
+    tipo: DESPESA
+    vigente-desde: "2026-01"
+    valor-planejado: "300.00"
+  - categoria: Trabalho A
+    tipo: RECEITA
+    vigente-desde: "2026-01"
+    valor-planejado: "5000.00"
+
+# Meta de economia (RF04): percentual da receita do mês, de 0 a 100, a partir de um mês. Mesma
+# lógica de vigência do orçamento. A planilha usa 10%.
+metas-economia:
+  - vigente-desde: "2026-01"
+    percentual: "10.00"

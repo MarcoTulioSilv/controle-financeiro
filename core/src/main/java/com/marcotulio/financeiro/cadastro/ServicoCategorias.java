@@ -47,8 +47,10 @@ public class ServicoCategorias {
     }
 
     /**
-     * A categoria com o nome e o tipo informados, ignorando acentos e maiúsculas (collation C3).
-     * Usado pelas dívidas: toda parcela vai para a categoria Dívidas (RF12).
+     * A categoria com o nome e o tipo informados, ativa ou não, ignorando acentos e maiúsculas
+     * (collation C3). Usado pelas dívidas, porque toda parcela vai para a categoria Dívidas
+     * (RF12), e pela carga do orçamento, que identifica a categoria pelo nome no arquivo de
+     * dados iniciais.
      */
     @Transactional(readOnly = true)
     public Optional<CategoriaCadastrada> buscarPorNomeETipo(String nome, TipoCategoria tipo) {
