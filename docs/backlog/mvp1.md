@@ -162,15 +162,15 @@ com Hibernate Envers (RNF06, além das colunas da convenção C7).
 - Referências: ERS RF01, RF12, RF13, RNF09.
 
 ## T10 — Orçamento, meta e reserva (com visões para relatórios)
-- Status: [ ] a fazer
+- Status: [x] concluída
 - Tipo: feat · Branch: `feat/T10-orcamento-reserva`
 - Depende de: T06
 - Objetivo: o planejado e a reserva, prontos para o Power BI.
 - Critérios de aceitação:
-  - [ ] Migrações de `orcamento`, `meta_economia` e `ajuste_reserva` (bloco D; recorrência fica fora).
-  - [ ] Orçamento e meta iniciais carregados de `config/dados-iniciais.yml`.
-  - [ ] Visões SQL (migrações Flyway) para o Power BI: lançamentos com nomes legíveis; resumo mensal (receitas, despesas, resultado, % de economia pela fórmula do RF04); planejado × real por categoria, respeitando a vigência; reserva acumulada por mês (RF18).
-  - [ ] Testes de integração das visões, com dados fictícios e resultados calculados à mão.
+  - [x] Migrações de `orcamento`, `meta_economia` e `ajuste_reserva` (bloco D; recorrência fica fora).
+  - [x] Orçamento e meta iniciais carregados de `config/dados-iniciais.yml`.
+  - [x] Visões SQL (migrações Flyway) para o Power BI: lançamentos com nomes legíveis; resumo mensal (receitas, despesas, resultado, % de economia pela fórmula do RF04); planejado × real por categoria, respeitando a vigência; reserva acumulada por mês (RF18).
+  - [x] Testes de integração das visões, com dados fictícios e resultados calculados à mão.
 - Referências: ERS RF04, RF09, RF18; ADR-007; `modelo-dados.md`, bloco D.
 
 ## T11 — Acesso do Power BI
