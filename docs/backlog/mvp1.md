@@ -4,7 +4,7 @@ Objetivo do MVP 1: parar de usar a planilha. Lançamentos pelo formulário web l
 cálculo de fatura, parcelamentos, orçamento e reserva, importação do histórico da planilha e
 relatórios no Power BI Desktop (ADR-007). O bot de WhatsApp fica para o MVP 2.
 
-Fora do MVP 1 (não implementar): exclusão de lançamentos e validação cruzada (RF10), revisão de
+Fora do MVP 1 (não implementar): exclusão de lançamentos pedida pelo usuário e validação cruzada (RF10), revisão de
 fatura (RF15), recorrências (RF03), patrimônio (RF05, RF17), bot e gateway (RF07), auditoria
 com Hibernate Envers (RNF06, além das colunas da convenção C7).
 
@@ -33,6 +33,7 @@ com Hibernate Envers (RNF06, além das colunas da convenção C7).
 | 6 | T07 ∥ T10 |
 | 7 | T09 ∥ T11 |
 | 8 | T12 ∥ T14 |
+| 9 | T16 |
 | — | T13 (Marco, sem agente, depois da T11) |
 
 ---
@@ -223,3 +224,18 @@ com Hibernate Envers (RNF06, além das colunas da convenção C7).
   - [x] Semgrep e SpotBugs com FindSecBugs no pipeline, com as actions fixadas por hash.
   - [x] Nenhum alerta pendente sem justificativa registrada.
 - Referências: CLAUDE.md, seção 6.
+
+## T16 — Adiantamento e quitação de dívidas
+- Status: [ ] a fazer
+- Tipo: feat · Branch: `feat/T16-adiantamento-divida`
+- Depende de: T07, T09
+- Objetivo: registrar pela web o adiantamento de uma dívida (valor pago e valor abatido), com a quitação antecipada como caso particular (ERS v1.4, issue #30).
+- Critérios de aceitação:
+  - [ ] Migração de `adiantamento_divida`, fiel ao `modelo-dados.md` (3.9).
+  - [ ] Serviço: numa única transação, cria o lançamento do pagamento (categoria Dívidas, "para quem" da dívida, mês de referência pelo RF01, com cartão opcional pelo RF14) e aplica o abatimento. Na web o adiantamento já nasce `APLICADO`.
+  - [ ] Abatimento a partir da última parcela abatível: exclusão lógica das parcelas inteiras e redução da seguinte pelo restante (`maquinas-estado.md`, seção 5). Testes: o saldo devedor cai **exatamente** o valor abatido; abatimento que fecha parcelas inteiras; abatimento que não fecha; o exemplo do ERS (saldo R$ 1.500,00, pago R$ 450,00, abatido R$ 500,00 → saldo R$ 1.000,00).
+  - [ ] Valor abatido igual ao saldo devedor: dívida `QUITADA`, com `data_quitacao`.
+  - [ ] Recusas, com teste: valor abatido maior que o saldo devedor; valor pago maior que o abatido; dívida `QUITADA`; parcela afetada em fatura `CONFERIDA` ou `PAGA` (RN06).
+  - [ ] Tela web (Thymeleaf + HTMX, no padrão da T09): escolher a dívida ativa, informar valor pago, valor abatido e cartão (opcional); mensagens de validação em português; testes da camada web.
+  - [ ] Fora desta tarefa: o fluxo do bot (`PENDENTE`, confirmação e descarte), que fica para o MVP 2.
+- Referências: ERS RF12, RN05, RN06; ADR-005; `modelo-dados.md`, 3.5, 3.8 e 3.9; `maquinas-estado.md`, seções 2 e 5.

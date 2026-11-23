@@ -3,8 +3,8 @@
 | Campo | Valor |
 |---|---|
 | Banco | MySQL 8 |
-| Base | ERS v1.2 (seção 7 — modelo conceitual), ADR-004, ADR-005, ADR-006 |
-| Situação | **Completo** — blocos A a E aprovados (base: ERS v1.2) |
+| Base | ERS v1.4 (seção 7 — modelo conceitual), ADR-004, ADR-005, ADR-006 |
+| Situação | **Completo** — blocos A a E aprovados (base: ERS v1.2); `adiantamento_divida` acrescentada na v1.4 |
 
 O modelo é dividido em três blocos:
 - **A — Núcleo de lançamentos:** destinatários, usuários, números autorizados, categorias, palavras-chave e lançamentos.
@@ -150,6 +150,8 @@ erDiagram
     fatura ||--o{ lancamento : "agrupa"
     cartao ||--o{ lancamento : "pagou"
     divida ||--o{ lancamento : "tem como parcelas"
+    divida ||--o{ adiantamento_divida : "recebe"
+    lancamento ||--o| adiantamento_divida : "é o pagamento de"
 ```
 
 ### 3.3 `cartao` (RF14)
@@ -197,14 +199,12 @@ Restrição: `UNIQUE (cartao_id, mes_referencia)` — uma fatura por cartão por
 | status | VARCHAR(10) | NOT NULL, `CHECK IN ('ATIVA','QUITADA')` |
 | bem_id | BIGINT | FK → bem (bloco E), opcional |
 | data_quitacao | DATE | Preenchida quando a dívida é quitada |
-| lancamento_quitacao_id | BIGINT | FK → lancamento, UNIQUE; só na quitação antecipada |
 
 Restrições:
 - `CHECK (tipo <> 'PARCELAMENTO_CARTAO' OR cartao_id IS NOT NULL)` — parcelamento de cartão exige o cartão.
 - `CHECK ((status = 'QUITADA') = (data_quitacao IS NOT NULL))`.
-- `CHECK (lancamento_quitacao_id IS NULL OR status = 'QUITADA')`.
 
-O pagamento de quitação antecipada não é uma parcela numerada; por isso é ligado à dívida por `lancamento_quitacao_id`, e não pelo par `divida_id` + `numero_parcela` (ver `maquinas-estado.md`, seção 2).
+O pagamento de um adiantamento (inclusive o da quitação antecipada) não é uma parcela numerada; por isso é ligado à dívida pela tabela `adiantamento_divida` (3.9), e não pelo par `divida_id` + `numero_parcela`.
 
 O **saldo devedor não é gravado**: é calculado a partir das parcelas ainda não vencidas. Gravar um dado derivado criaria duas fontes da mesma informação, que poderiam divergir (normalização).
 
@@ -236,7 +236,26 @@ Restrições:
 **Redundância consciente:** para compras no cartão, `lancamento.mes_referencia` deve ser igual a `fatura.mes_referencia`. A duplicação é deliberada (lançamentos sem cartão precisam do campo, e os relatórios consultam uma única tabela). A aplicação garante que os dois mudam juntos, por exemplo ao mover uma compra entre faturas na revisão. Exige teste dedicado.
 
 ### 3.8 Quitação antecipada
-Definida em `maquinas-estado.md` (seção 2): não exige validação cruzada; as parcelas futuras são excluídas logicamente como efeito da quitação.
+Desde o ERS v1.4, é um adiantamento cujo valor abatido zera o saldo devedor (3.9 e `maquinas-estado.md`, seções 2 e 5). Não exige validação cruzada; as parcelas abatidas são excluídas logicamente como efeito do adiantamento.
+
+### 3.9 `adiantamento_divida` (RF12)
+
+| Coluna | Tipo | Regras |
+|---|---|---|
+| id | BIGINT | PK |
+| divida_id | BIGINT | NOT NULL, FK → divida |
+| lancamento_id | BIGINT | NOT NULL, UNIQUE, FK → lancamento (o pagamento; o valor pago é o `valor` dele) |
+| valor_abatido | DECIMAL(12,2) | NOT NULL, `CHECK (valor_abatido > 0)` |
+| status | VARCHAR(10) | NOT NULL, `CHECK IN ('PENDENTE','APLICADO','DESCARTADO')` |
+
+Mais as colunas de auditoria da convenção C7.
+
+Regras garantidas na aplicação (dependem de outras linhas, por isso não cabem num `CHECK`):
+- valor abatido ≤ saldo devedor no momento da aplicação;
+- valor pago (`lancamento.valor`) ≤ valor abatido;
+- o lançamento do pagamento tem a categoria Dívidas e o `destinatario_id` da dívida.
+
+O valor pago não é repetido aqui: já está no lançamento, e guardá-lo duas vezes criaria duas fontes da mesma informação. O desconto (valor abatido − valor pago) é calculado.
 
 ## 4. Bloco C — Aprovações, rascunhos e auditoria
 
@@ -522,5 +541,6 @@ Chegou a ser proposta uma tabela de fechamento mensal (fotografia do patrimônio
 | 04/10/2026 | Bloco D aprovado (recorrências projetadas, orçamento e meta com vigência, saldo inicial) |
 | 04/10/2026 | ERS v1.1: `saldo_inicial` substituída por `ajuste_reserva`; bloco E aprovado com `movimentacao_ativo` e quantidades calculadas; fechamento mensal descartado. Modelo completo |
 | 05/10/2026 | `divida`: colunas `data_quitacao` e `lancamento_quitacao_id` (máquina de estados da dívida) |
+| 22/11/2026 | ERS v1.4 (issue #30): nova tabela `adiantamento_divida` (3.9); sai `divida.lancamento_quitacao_id`, pois a quitação antecipada passa a ser um adiantamento |
 | 05/10/2026 | Novos status: `CANCELADA` em `solicitacao_aprovacao` e `DESCARTADO` em `rascunho` (máquinas de estado; ERS v1.2) |
 | 05/10/2026 | Nova tabela `mensagem_processada` (idempotência do contrato gateway → core) |
