@@ -69,7 +69,7 @@ final class RegrasDoLancamento {
      * arredondar em silêncio mudaria o valor que o usuário digitou. Por isso o
      * {@code RoundingMode.UNNECESSARY}: depois da conferência, não sobra nada a arredondar.
      */
-    private static BigDecimal valorEmCentavos(BigDecimal valor) {
+    static BigDecimal valorEmCentavos(BigDecimal valor) {
         exigir(valor.signum() > 0, "O valor deve ser maior que zero.");
         // stripTrailingZeros: "150.500" tem escala 3, mas são só R$ 150,50.
         exigir(valor.stripTrailingZeros().scale() <= 2, "O valor aceita no máximo dois decimais (centavos).");
